@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:connectivity/connectivity.dart';
 
 class Util {
-  static Future<String> obtenerIpSucursal() async {
+  static String obtenerIpSucursal() {
     var ip = "192.168.3.204";
 
 //ToDo:Sacar.
@@ -53,12 +53,7 @@ class Util {
   }
 
   static String obtenerIDSucursal() {
-    String ip = "";
-
-    obtenerIpSucursal()
-        .then((value) => ip = value.toString())
-        .whenComplete(() => null)
-        .toString();
+    String ip = obtenerIpSucursal();
 
     if (ip.startsWith("192.168.1.")) return "F1";
     if (ip.startsWith("192.168.2.")) return "F2";
@@ -75,16 +70,16 @@ class Util {
     return "";
   }
 
-  static Future<bool> esSucursal() async {
-    String ipSucursalResult = await Util.obtenerIpSucursal();
+  static bool esSucursal() {
+    String ipSucursalResult = Util.obtenerIpSucursal();
 
     if (ipSucursalResult != "192.168.9.245") return true;
 
     return false;
   }
 
-  static Future<String> urlBase() async {
-    String sucursalResult = await obtenerIpSucursal();
+  static String urlBase() {
+    String sucursalResult = obtenerIpSucursal();
 
     return "http://" + sucursalResult + "/";
   }

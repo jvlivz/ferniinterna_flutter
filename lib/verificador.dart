@@ -289,8 +289,7 @@ class Utiles {
   static ImageProvider imagen(String? imagen) {
     if (imagen != null) {
       try {
-        String urlBase = "";
-        Util.urlBase().then((value) => {urlBase = value.toString()});
+        String urlBase = Util.urlBase();
 
         return NetworkImage(
           urlBase + imagen,

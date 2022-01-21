@@ -168,8 +168,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   verCatalogo() {}
 
-  abrirOfertas() async {
-    bool sucursalResult = await Util.esSucursal();
+  abrirOfertas() {
+    bool sucursalResult = Util.esSucursal();
 
     if (sucursalResult)
       Util.launchURL("https://www.ferniplast.com/nuestras-ofertas");
