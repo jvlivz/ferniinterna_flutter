@@ -161,9 +161,9 @@ class _VerificadorState extends State<Verificador> {
       DeviceOrientation.portraitDown,
     ]);
 
-    String idSucursal ="";
-     Util.obtenerIDSucursal().then((value) => idSucursal= value);
-    
+    String idSucursal = "";
+    idSucursal = Util.obtenerIDSucursal();
+
     return Scaffold(
       appBar: AppBar(
           actions: <Widget>[
@@ -253,9 +253,7 @@ class _VerificadorState extends State<Verificador> {
                   visibleDivider: false,
                 ),
                 TextWithDivider(
-                  texto: (idSucursal != "")
-                      ? "Sucursal: " + idSucursal
-                      : "",
+                  texto: (idSucursal != "") ? "Sucursal: " + idSucursal : "",
                   fontWeight: FontWeight.bold,
                   maxLines: 1,
                   size: 10,
