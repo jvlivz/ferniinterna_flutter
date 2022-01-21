@@ -52,8 +52,13 @@ class Util {
     return ip; */
   }
 
-  static String obtenerIDSucursal()  {
-    String ip =  obtenerIpSucursal().toString();
+  static String obtenerIDSucursal() {
+    String ip = "";
+
+    obtenerIpSucursal()
+        .then((value) => ip = value.toString())
+        .whenComplete(() => null)
+        .toString();
 
     if (ip.startsWith("192.168.1.")) return "F1";
     if (ip.startsWith("192.168.2.")) return "F2";
