@@ -10,15 +10,14 @@ import 'package:flutter_html/flutter_html.dart';
 
 import 'DetailScreen.dart';
 
-
-class Verificador extends StatefulWidget {
+class Precios extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _VerificadorState();
+    return _PreciosState();
   }
 }
 
-class _VerificadorState extends State<Verificador> {
+class _PreciosState extends State<Precios> {
   final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
   final txtCodigoController = TextEditingController();
 
@@ -84,7 +83,7 @@ class _VerificadorState extends State<Verificador> {
             ),
           ],
           title: Text(
-            "Verificador",
+            "Precios",
             style: new TextStyle(fontFamily: "Gretoon"),
           ),
           backgroundColor: rojoFerni),
@@ -531,23 +530,74 @@ class _VerificadorState extends State<Verificador> {
                                         Text("Artículo en Colas de Stock"),
                                   ),
                                 ),
-                              if (datos.descripcionCorta != "" ||
-                                  datos.descripcionLarga != "")
+                              if (datos.idArtic != "")
                                 Card(
                                   color: Colors.white70,
                                   child: ListTile(
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                      title: Text("Descripciones"),
-                                      subtitle: Column(
-                                        children: [
-                                          Text(datos.descripcionCorta
-                                              .toString()),
-                                          Html(
-                                              data: datos.descripcionLarga
-                                                  .toString())
-                                        ],
-                                      )),
+                                    contentPadding:
+                                        EdgeInsets.fromLTRB(15, 10, 25, 0),
+                                    title: Text("Tipo de etiqueta"),
+                                    subtitle: Row(
+                                      children: [
+                                        Expanded(
+                                            flex: 2,
+                                            child: Column(children: [
+                                              TextButton.icon(
+                                                
+                                                style: TextButton.styleFrom(
+                                                    primary: Colors.green,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                        minimumSize: Size.fromHeight(50)),
+                                                icon: Icon(Icons.edit),
+                                                label: Text("Oferta"),
+                                                onPressed: () =>
+                                                    print("Button Clicked!"),
+                                              ),
+                                              TextButton.icon(
+                                                style: TextButton.styleFrom(
+                                                    primary: Colors.green,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                        minimumSize: Size.fromHeight(50)),
+                                                icon: Icon(Icons.edit),
+                                                label: Text("Normal"),
+                                                onPressed: () =>
+                                                    print("Button Clicked!"),
+                                              ),
+                                            ])),
+                                           
+                                        Expanded(
+                                            flex: 2,
+                                            child: Column(
+                                              children: [
+                                                TextButton.icon(
+                                                  style: TextButton.styleFrom(
+                                                      primary: Colors.green,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                        minimumSize: Size.fromHeight(50)),
+                                                  icon: Icon(Icons.edit),
+                                                  label: Text("Grande"),
+                                                  onPressed: () =>
+                                                      print("Button Clicked!"),
+                                                ),
+                                                TextButton.icon(
+                                                  style: TextButton.styleFrom(
+                                                      primary: Colors.green,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                        minimumSize: Size.fromHeight(50)),
+                                                  icon: Icon(Icons.edit),
+                                                  label: Text("Chico"),
+                                                  onPressed: () =>
+                                                      print("Button Clicked!"),
+                                                )
+                                              ],
+                                            ))
+                                      ],
+                                    ),
+                                  ),
                                 ),
                             ],
                           )),

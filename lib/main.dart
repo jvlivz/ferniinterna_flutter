@@ -1,7 +1,7 @@
+import 'package:ferniinterna/precios.dart';
 import 'package:ferniinterna/util.dart';
 import 'package:ferniinterna/verificador.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 void main() {
   runApp(MyApp());
@@ -124,7 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       SquareButton(
                           texto: "Imprimir precios",
                           icono: Icons.receipt,
-                          onPressed: () => print("Button Clicked!")),
+                           onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Precios()),
+                              )),
                       SquareButton(
                           texto: "Exhibiciones",
                           icono: Icons.space_dashboard,
@@ -140,15 +144,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       SquareButton(
                           texto: "Mono",
                           icono: Icons.collections_bookmark,
-                          onPressed: () => print("Button Clicked!")),
+                          onPressed: () => abrirmono()),
                       SquareButton(
                           texto: "#ActitudFerni",
                           icono: Icons.group_add,
-                          onPressed: () => print("Button Clicked!")),
+                          onPressed: () => abrirDDOO()),
                       SquareButton(
                           texto: "Intranet",
                           icono: Icons.stream,
-                          onPressed: () => print("Button Clicked!")),
+                          onPressed: () => abrirIntranet()),
                     ]),
               )
             ],
@@ -175,6 +179,20 @@ class _MyHomePageState extends State<MyHomePage> {
       Util.launchURL("https://www.ferniplast.com/nuestras-ofertas");
     else
       Util.launchURL("https://www.ferniplastmayorista.com/ofertas/");
+  }
+
+  abrirmono() {
+    bool sucursalResult = Util.esSucursal();
+
+    if (sucursalResult) Util.launchURL("http://192.168.100.245/mono/");
+  }
+
+  abrirDDOO() {
+    Util.launchURL("https://sites.google.com/view/rrhh-ferniplast/inicio");
+  }
+
+  abrirIntranet() {
+    Util.launchURL("http://192.168.100.245");
   }
 }
 

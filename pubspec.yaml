@@ -1,5 +1,5 @@
 name: ferniinterna
-description: A new Flutter project.
+description: Uso interno Ferniplast.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -33,6 +33,9 @@ dependencies:
   flutter_barcode_scanner: ^2.0.0
   http: ^0.13.4
   connectivity: ^3.0.6
+  cached_network_image: ^3.2.0
+  photo_view: ^0.13.0
+  flutter_html: ^2.2.1
 
 dev_dependencies:
   flutter_test:
@@ -43,7 +46,10 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
+  fonts:
+    - family: Gretoon
+      fonts:
+        - asset: fonts/Gretoon.ttf
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

@@ -1,12 +1,13 @@
-import 'dart:io';
-import 'package:network_info_plus/network_info_plus.dart';
+//import 'dart:io';
+//import 'package:network_info_plus/network_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:connectivity/connectivity.dart';
+//import 'package:connectivity/connectivity.dart';
 
 class Util {
-  static String obtenerIpSucursal() {
-    var ip = "192.168.3.204";
-
+  static String obtenerIpSucursal({bool esPrecios=false}) {
+    var ip = "192.168.3.253";
+if (esPrecios)
+ip = "192.168.3.204";
 //ToDo:Sacar.
     return ip;
     /* try {
@@ -52,8 +53,8 @@ class Util {
     return ip; */
   }
 
-  static String obtenerIDSucursal() {
-    String ip = obtenerIpSucursal();
+  static String obtenerIDSucursal({bool esPrecios=false}) {
+    String ip = obtenerIpSucursal(esPrecios: esPrecios);
 
     if (ip.startsWith("192.168.1.")) return "F1";
     if (ip.startsWith("192.168.2.")) return "F2";
@@ -70,26 +71,26 @@ class Util {
     return "";
   }
 
-  static bool esSucursal() {
-    String ipSucursalResult = Util.obtenerIpSucursal();
+  static bool esSucursal( {bool esPrecios=false}) {
+    String ipSucursalResult = Util.obtenerIpSucursal(esPrecios:esPrecios);
 
     if (ipSucursalResult != "192.168.9.245") return true;
 
     return false;
   }
 
-  static String urlBase() {
-    String sucursalResult = obtenerIpSucursal();
+  static String urlBase({bool esPrecios=false}) {
+    String sucursalResult = obtenerIpSucursal(esPrecios:esPrecios);
 
     return "http://" + sucursalResult + "/";
   }
 
   static launchURL(String url) async {
     print("launching " + url);
-    if (await canLaunch(url)) {
+    //if (await canLaunch(url)) {
       await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
+    //} else {
+    //  throw 'Could not launch $url';
+    //}
   }
 }
