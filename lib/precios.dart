@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:ferniinterna/Consulta.dart';
+import 'package:ferniinterna/Usuario.dart';
 import 'package:ferniinterna/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -7,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'DetailScreen.dart';
 
@@ -20,8 +22,49 @@ class Precios extends StatefulWidget {
 class _PreciosState extends State<Precios> {
   final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
   final txtCodigoController = TextEditingController();
+  final txtUsuarioController = TextEditingController();
 
   Consulta datos = new Consulta();
+  List<String> listaUltimos = [];
+  String ultimos = "";
+  List data = [];
+  List<DropdownMenuItem<String>> impresoras = [];
+  String _impresoraSeleccionada = "";
+
+  void cargaUsuario() async {
+    // Obtain shared preferences.
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString('login_user') != null)
+      txtUsuarioController.value = TextEditingValue(
+        text: prefs.getString('login_user').toString(),
+        selection: TextSelection.fromPosition(
+          TextPosition(offset: prefs.getString('login_user').toString().length),
+        ),
+      );
+  }
+
+  Future<String> leerImpresoras() async {
+    String urlBase = Util.urlBase();
+    var res = await http
+        .get(Uri.parse(urlBase + "verificadores/consulta.aspx?cim=1"));
+
+    var resBody = json.decode(res.body);
+
+    setState(() {
+      data = resBody;
+      impresoras = data
+          .map((item) =>
+              DropdownMenuItem(child: Text(item), value: item.toString()))
+          .toList();
+
+      impresoras.insert(0,
+          DropdownMenuItem(child: Text("Sistema ERP"), value: "Sistema ERP"));
+      _impresoraSeleccionada = "Sistema ERP";
+    });
+    print(resBody);
+
+    return "Sucess";
+  }
 
   void leerBarra() async {
     String barcodeScanRes = "";
@@ -72,6 +115,9 @@ class _PreciosState extends State<Precios> {
     String idSucursal = "";
     idSucursal = Util.obtenerIDSucursal();
 
+    if (impresoras.length == 0) leerImpresoras();
+    cargaUsuario();
+
     return Scaffold(
       appBar: AppBar(
           actions: <Widget>[
@@ -96,6 +142,41 @@ class _PreciosState extends State<Precios> {
                 width: double.infinity,
                 child: Column(
                   children: <Widget>[
+                    Row(children: [
+                      Expanded(
+                        flex: 2,
+                        child: TextField(
+                          controller: txtUsuarioController,
+                          autocorrect: false,
+                          autofocus: true,
+                          enableSuggestions: false,
+                          maxLength: 4,
+                          onSubmitted: (String str) {
+                            setState(() {
+                              buscaUsuario(str);
+                            });
+                          },
+                          decoration: InputDecoration(
+                              hintText: 'Usuario',
+                              counterStyle: TextStyle(
+                                height: double.minPositive,
+                              ),
+                              counterText: ""),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 4,
+                        child: DropdownButton(
+                          items: impresoras,
+                          value: _impresoraSeleccionada,
+                          onChanged: (newVal) {
+                            setState(() {
+                              _impresoraSeleccionada = newVal.toString();
+                            });
+                          },
+                        ),
+                      ),
+                    ]),
                     Row(
                       children: [
                         Expanded(
@@ -542,56 +623,79 @@ class _PreciosState extends State<Precios> {
                                         Expanded(
                                             flex: 2,
                                             child: Column(children: [
-                                              TextButton.icon(
-                                                
-                                                style: TextButton.styleFrom(
-                                                    primary: Colors.green,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                        minimumSize: Size.fromHeight(50)),
-                                                icon: Icon(Icons.edit),
-                                                label: Text("Oferta"),
-                                                onPressed: () =>
-                                                    print("Button Clicked!"),
+                                              Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 8, 4, 8),
+                                                child: TextButton.icon(
+                                                  style: TextButton.styleFrom(
+                                                      primary: Colors.red,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      minimumSize:
+                                                          Size.fromHeight(50)),
+                                                  icon: Icon(Icons.money),
+                                                  label: Text("Oferta"),
+                                                  onPressed: () => print(
+                                                      "Button Clicked!" +
+                                                          datos.idArtic
+                                                              .toString()),
+                                                ),
                                               ),
-                                              TextButton.icon(
-                                                style: TextButton.styleFrom(
-                                                    primary: Colors.green,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                        minimumSize: Size.fromHeight(50)),
-                                                icon: Icon(Icons.edit),
-                                                label: Text("Normal"),
-                                                onPressed: () =>
-                                                    print("Button Clicked!"),
+                                              Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 0, 4, 0),
+                                                child: TextButton.icon(
+                                                  style: TextButton.styleFrom(
+                                                      primary: Colors.blue,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      minimumSize:
+                                                          Size.fromHeight(50)),
+                                                  icon: Icon(Icons.crop_5_4),
+                                                  label: Text("Normal"),
+                                                  onPressed: () =>
+                                                      print("Button Clicked!"),
+                                                ),
                                               ),
                                             ])),
-                                           
                                         Expanded(
                                             flex: 2,
                                             child: Column(
                                               children: [
-                                                TextButton.icon(
-                                                  style: TextButton.styleFrom(
-                                                      primary: Colors.green,
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                        minimumSize: Size.fromHeight(50)),
-                                                  icon: Icon(Icons.edit),
-                                                  label: Text("Grande"),
-                                                  onPressed: () =>
-                                                      print("Button Clicked!"),
+                                                Padding(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      4, 8, 0, 8),
+                                                  child: TextButton.icon(
+                                                    style: TextButton.styleFrom(
+                                                        primary: Colors.indigo,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        minimumSize:
+                                                            Size.fromHeight(
+                                                                50)),
+                                                    icon: Icon(
+                                                        Icons.crop_portrait),
+                                                    label: Text("Destacado"),
+                                                    onPressed: () => print(
+                                                        "Button Clicked!"),
+                                                  ),
                                                 ),
-                                                TextButton.icon(
-                                                  style: TextButton.styleFrom(
-                                                      primary: Colors.green,
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                        minimumSize: Size.fromHeight(50)),
-                                                  icon: Icon(Icons.edit),
-                                                  label: Text("Chico"),
-                                                  onPressed: () =>
-                                                      print("Button Clicked!"),
+                                                Padding(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      4, 0, 0, 0),
+                                                  child: TextButton.icon(
+                                                    style: TextButton.styleFrom(
+                                                        primary: Colors.black,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        minimumSize:
+                                                            Size.fromHeight(
+                                                                50)),
+                                                    icon: Icon(Icons.crop_7_5),
+                                                    label: Text("Perfu"),
+                                                    onPressed: () =>
+                                                        imprimir(3, datos),
+                                                  ),
                                                 )
                                               ],
                                             ))
@@ -599,6 +703,17 @@ class _PreciosState extends State<Precios> {
                                     ),
                                   ),
                                 ),
+                              Card(
+                                child: ListTile(
+                                  contentPadding:
+                                      EdgeInsets.fromLTRB(15, 10, 25, 0),
+                                  title: Text("Últimos precios realizados"),
+                                  subtitle: Text(
+                                    ultimos,
+                                    style: TextStyle(fontSize: 9),
+                                  ),
+                                ),
+                              ),
                             ],
                           )),
                     ),
@@ -615,6 +730,27 @@ class _PreciosState extends State<Precios> {
         ),
       ),
     );
+  }
+
+  imprimir(int i, Consulta datos) {
+    listaUltimos.insert(0, datos.descripcion.toString() + "\n");
+
+    if (listaUltimos.length > 10) listaUltimos.removeAt(10);
+
+    setState(() => ultimos = listaUltimos.join("\n"));
+  }
+
+  void buscaUsuario(String str) async {
+    String urlBase = Util.urlBase();
+    var res = await http
+        .get(Uri.parse(urlBase + "verificadores/consulta.aspx?ope=" + str));
+
+    var resBody = json.decode(res.body);
+    Usuario u=Usuario.fromJson(resBody);
+
+    // Obtain shared preferences.
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('login_user', str);
   }
 }
 
