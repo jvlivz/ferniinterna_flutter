@@ -1,7 +1,11 @@
+import 'package:ferniinterna/Login.dart';
+import 'package:ferniinterna/exhibiciones.dart';
 import 'package:ferniinterna/precios.dart';
 import 'package:ferniinterna/util.dart';
 import 'package:ferniinterna/verificador.dart';
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icon.dart';
+import 'package:line_icons/line_icons.dart';
 
 void main() {
   runApp(MyApp());
@@ -50,6 +54,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
 
   void _incrementCounter() {
     setState(() {
@@ -76,13 +81,91 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(widget.title, style: TextStyle(fontFamily: 'Gretoon')),
+        backgroundColor: rojoFerni,
+      ),
+      drawer: Drawer(
+        // Add a ListView to the drawer. This ensures the user can scroll
+        // through the options in the drawer if there isn't enough vertical
+        // space to fit everything.
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            const UserAccountsDrawerHeader(
+              accountName: Text("Hola Usuario, bienvenido!"),
+              accountEmail: Text(""),
+              currentAccountPicture: CircleAvatar(
+                radius: 50.0,
+                backgroundColor: const Color(0xFF778899),
+                backgroundImage:
+                    NetworkImage("http://tineye.com/images/widgets/mona.jpg"),
+              ),
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 254, 0, 36),
+              ),
+            ),
+            ListTile(
+              title: const Text('Visitar Ferniplast.com'),
+              leading: Icon(Icons.shopping_bag),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+                abrirFerniplastCom();
+              },
+            ),
+            ListTile(
+              title: const Text('Descuento Empleados'),
+              leading: Icon(Icons.recent_actors),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+              },
+            ),
+            ListTile(
+              title: const Text('Facebook grupo Ferni'),
+              leading: Icon(Icons.groups),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+                abrirFacebookGrupo();
+              },
+            ),
+            ListTile(
+              title: const Text('Instagram'),
+              leading: Icon(Icons.photo_camera),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+                abrirInstagram();
+              },
+            ),
+            ListTile(
+              title: const Text('Facebook '),
+              leading: Icon(Icons.facebook),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+                abrirFacebook();
+              },
+            ),
+            ListTile(
+              title: const Text('Twitter'),
+              leading: Icon(Icons.message),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+                abrirTwitter();
+              },
+            ),
+          ],
+        ),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Padding(
-          padding: new EdgeInsets.all(12.0),
+          padding: new EdgeInsets.all(8.0),
           child: Column(
             // Column is also a layout widget. It takes a list of children and
             // arranges them vertically. By default, it sizes itself to fit its
@@ -105,17 +188,19 @@ class _MyHomePageState extends State<MyHomePage> {
                     // Create a grid with 2 columns. If you change the scrollDirection to
                     // horizontal, this produces 2 rows.
                     crossAxisCount: 3,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
                     // Generate 100 widgets that display their index in the List.
                     children: <Widget>[
                       SquareButton(
                           texto: "Catálogo de ofertas",
-                          icono: Icons.request_quote,
+                          icono: LineIcons.tag,
+                          colorIcono: Colors.deepPurple,
                           onPressed: () => abrirOfertas()),
                       SquareButton(
                           texto: "Verificador",
-                          icono: Icons.price_check,
+                          icono: LineIcons.barcode,
+                          colorIcono: Colors.green,
                           onPressed: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -123,36 +208,62 @@ class _MyHomePageState extends State<MyHomePage> {
                               )),
                       SquareButton(
                           texto: "Imprimir precios",
-                          icono: Icons.receipt,
-                           onPressed: () => Navigator.push(
+                          icono: LineIcons.receipt,
+                          colorIcono: Colors.lightBlue,
+                          onPressed: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => Precios()),
                               )),
                       SquareButton(
                           texto: "Exhibiciones",
-                          icono: Icons.space_dashboard,
-                          onPressed: () => print("Button Clicked!")),
+                          colorIcono: Colors.deepOrange,
+                          icono: LineIcons.shapes,
+                          onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Login()),
+                              )),
                       SquareButton(
                           texto: "FerniOnline",
-                          icono: Icons.shopping_cart,
+                          colorIcono: Colors.indigo,
+                          icono: LineIcons.shoppingCart,
                           onPressed: () => print("Button Clicked!")),
                       SquareButton(
                           texto: "Inventario",
-                          icono: Icons.widgets,
+                          colorIcono: Colors.amber,
+                          icono: LineIcons.checkSquare,
                           onPressed: () => print("Button Clicked!")),
                       SquareButton(
                           texto: "Mono",
-                          icono: Icons.collections_bookmark,
+                          colorIcono: Color.fromARGB(255, 47, 201, 9),
+                          icono: LineIcons.book,
                           onPressed: () => abrirmono()),
                       SquareButton(
                           texto: "#ActitudFerni",
-                          icono: Icons.group_add,
+                          colorIcono: Color.fromARGB(255, 206, 63, 19),
+                          icono: LineIcons.peopleCarry,
                           onPressed: () => abrirDDOO()),
                       SquareButton(
                           texto: "Intranet",
-                          icono: Icons.stream,
+                          colorIcono: Color.fromARGB(255, 19, 98, 202),
+                          icono: LineIcons.confluence,
                           onPressed: () => abrirIntranet()),
+                      SquareButton(
+                          texto: "Novedades Mkt",
+                          colorIcono: Color.fromARGB(255, 219, 80, 16),
+                          icono: LineIcons.newspaper,
+                          onPressed: () => abrirMkt()),
+                      SquareButton(
+                          texto: "Facebook",
+                          colorIcono: Color.fromARGB(255, 52, 118, 218),
+                          icono: LineIcons.facebook,
+                          onPressed: () => abrirFacebook()),
+                      SquareButton(
+                          texto: "Instagram",
+                          colorIcono: Color.fromARGB(255, 218, 52, 163),
+                          icono: LineIcons.instagram,
+                          onPressed: () => abrirInstagram()),
                     ]),
               )
             ],
@@ -194,6 +305,30 @@ class _MyHomePageState extends State<MyHomePage> {
   abrirIntranet() {
     Util.launchURL("http://192.168.100.245");
   }
+
+  void abrirFerniplastCom() {
+    Util.launchURL("https://www.ferniplast.com");
+  }
+
+  void abrirFacebookGrupo() {
+    Util.launchURL("https://www.facebook.com/groups/ferniplast");
+  }
+
+  void abrirInstagram() {
+    Util.launchURL("https://www.instagram.com/Ferniplast/");
+  }
+
+  void abrirFacebook() {
+    Util.launchURL("https://www.facebook.com/Ferniplast/");
+  }
+
+  void abrirTwitter() {
+    Util.launchURL("https://twitter.com/Ferniplast");
+  }
+
+  void abrirMkt() {
+    Util.launchURL("http://192.168.100.245/marketing/");
+  }
 }
 
 class SquareButton extends StatelessWidget {
@@ -201,34 +336,52 @@ class SquareButton extends StatelessWidget {
       {Key? key,
       required this.texto,
       required this.icono,
+      required this.colorIcono,
       required this.onPressed})
       : super(key: key);
 
   final String texto;
   final IconData icono;
   final VoidCallback onPressed;
+  final Color colorIcono;
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: onPressed,
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-                child: Icon(
-              icono,
-              size: MediaQuery.of(context).size.width * .2,
-            )),
-            Center(
-                child: Text(
-              texto,
-              textAlign: TextAlign.center,
-              style:
-                  TextStyle(fontSize: MediaQuery.of(context).size.width * .025),
-            ))
-          ]),
-    );
+    final Color rojoFerni = Color.fromARGB(255, 32, 32, 32);
+
+    return Material(
+        borderRadius: BorderRadius.circular(7.0),
+        elevation: 2,
+        shadowColor: Color.fromARGB(255, 228, 228, 228),
+        child: Container(
+            height: 45,
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(25.0),
+              ),
+            ),
+            child: TextButton(
+              onPressed: onPressed,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                        child: Icon(
+                      icono,
+                      size: MediaQuery.of(context).size.width * .15,
+                      color: colorIcono,
+                    )),
+                    Center(
+                        child: Text(
+                      texto,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * .025,
+                           
+                          color: Colors.grey[700]),
+                    ))
+                  ]),
+            )));
   }
 }

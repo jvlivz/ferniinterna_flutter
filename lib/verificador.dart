@@ -10,7 +10,6 @@ import 'package:flutter_html/flutter_html.dart';
 
 import 'DetailScreen.dart';
 
-
 class Verificador extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {

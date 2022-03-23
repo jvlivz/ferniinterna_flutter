@@ -12,7 +12,7 @@ class Consulta {
   final String? uni1;
   final String? pre1;
   final String? precio;
-  final String? idArtic;
+  String? idArtic;
   final String? fecha;
   final String? oferta;
   final String? stockF1;
@@ -28,7 +28,7 @@ class Consulta {
   final String? stockCD;
   final String? ventaPromedio;
   final String? stock;
-  final int? exhibicion;
+  final int exhibicion;
   final String? condVta;
   final String? promoHasta;
   final String? categPub;
@@ -36,6 +36,19 @@ class Consulta {
   final String? imagen;
   final String? nombre;
   final List<String> imagenes;
+  final int bin;
+  final int bm;
+  final int exhibT;
+  final int exhibE;
+  final int exhibA;
+  final String? estacional;
+  String tipoExhNormal;
+  final int minimo;
+  final int exhNMax;
+  final int exhEtMax;
+  final String hVigEst;
+  final String hVigExh;
+  String exhETA;
 
   Consulta(
       {this.encabezado = "",
@@ -64,7 +77,7 @@ class Consulta {
       this.stockCD = "",
       this.ventaPromedio = "",
       this.stock = "",
-      this.exhibicion,
+      this.exhibicion = 0,
       this.condVta = "",
       this.promoHasta = "",
       this.categPub = "",
@@ -73,48 +86,85 @@ class Consulta {
       this.nombre = "",
       this.imagenes = const [],
       this.descripcionCorta = "",
-      this.descripcionLarga = ""});
+      this.descripcionLarga = "",
+      this.bin = 0,
+      this.bm = 0,
+      this.exhibT = 0,
+      this.exhibE = 0,
+      this.exhibA = 0,
+      this.estacional = "",
+      this.exhNMax = 999999,
+      this.minimo = 0,
+      this.tipoExhNormal = "",
+      this.exhEtMax = 0,
+      this.hVigEst = "",
+      this.hVigExh = "",
+      this.exhETA = ""}
+      
+      );
+
 
   factory Consulta.fromJson(Map<String, dynamic> json) {
-    return Consulta(
-      encabezado: json['ENCABEZADO'] ?? "",
-      pie: json['PIE'] ?? "",
-      descripcion: json['DESCRIPCION'] ?? "",
-      descripcionCorta: json['DESCRIPCIONCORTA'] ?? "",
-      descripcionLarga: json['DESCRIPCIONLARGA'] ?? "",
-      desc1: json['DESC1'] ?? "",
-      error: json['ERROR'] ?? "",
-      uni2: json['UNI2'] ?? "",
-      pre2: json['PRE2'] ?? "",
-      desc2: json['DESC2'] ?? "",
-      uni1: json['UNI1'] ?? "",
-      pre1: json['PRE1'] ?? "",
-      precio: json['PRECIO'] ?? "",
-      idArtic: json['ID_ARTIC'] ?? "",
-      fecha: json['FECHA'] ?? "",
-      oferta: json['OFERTA'] ?? "",
-      stockF1: json['STOCKF1'] ?? "",
-      stockF2: json['STOCKF2'] ?? "",
-      stockF3: json['STOCKF3'] ?? "",
-      stockF4: json['STOCKF4'] ?? "",
-      stockF5: json['STOCKF5'] ?? "",
-      stockF6: json['STOCKF6'] ?? "",
-      stockF7: json['STOCKF7'] ?? "",
-      stockF8: json['STOCKF8'] ?? "",
-      stockF9: json['STOCKF9'] ?? "",
-      stockCD: json['STOCKCD'] ?? "",
-      ventaPromedio: json['VENTAPROMEDIO'] ?? "",
-      stock: json['STOCK'] ?? "",
-      exhibicion: (json['EXHIBICION'] != null && json['EXHIBICION'] != "")
-          ? int.parse(json['EXHIBICION'])
-          : null,
-      condVta: json['COND_VTA'] ?? "",
-      promoHasta: json['PROMOHASTA'] ?? "",
-      categPub: json['CATEG_PUB'] ?? "",
-      promoSucursales: json['PROMOSUCURSALES'] ?? "",
-      imagen: json['IMAGEN'] ?? "",
-      nombre: json['NOMBRE'] ?? "",
-      imagenes: (json['IMAGENES'] != null) ? List.from(json["IMAGENES"]) : [],
-    );
+    Consulta consulta = new Consulta();
+    if (json['ID_ARTIC'] == null) {
+      consulta = Consulta(error: json['ERROR'] ?? "");
+    } else
+      consulta = Consulta(
+          encabezado: json['ENCABEZADO'] ?? "",
+          pie: json['PIE'] ?? "",
+          descripcion: json['DESCRIPCION'] ?? "",
+          descripcionCorta: json['DESCRIPCIONCORTA'] ?? "",
+          descripcionLarga: json['DESCRIPCIONLARGA'] ?? "",
+          desc1: json['DESC1'] ?? "",
+          error: json['ERROR'] ?? "",
+          uni2: json['UNI2'] ?? "",
+          pre2: json['PRE2'] ?? "",
+          desc2: json['DESC2'] ?? "",
+          uni1: json['UNI1'] ?? "",
+          pre1: json['PRE1'] ?? "",
+          precio: json['PRECIO'] ?? "",
+          idArtic: json['ID_ARTIC'] ?? "",
+          fecha: json['FECHA'] ?? "",
+          oferta: json['OFERTA'] ?? "",
+          stockF1: json['STOCKF1'] ?? "",
+          stockF2: json['STOCKF2'] ?? "",
+          stockF3: json['STOCKF3'] ?? "",
+          stockF4: json['STOCKF4'] ?? "",
+          stockF5: json['STOCKF5'] ?? "",
+          stockF6: json['STOCKF6'] ?? "",
+          stockF7: json['STOCKF7'] ?? "",
+          stockF8: json['STOCKF8'] ?? "",
+          stockF9: json['STOCKF9'] ?? "",
+          stockCD: json['STOCKCD'] ?? "",
+          ventaPromedio: json['VENTAPROMEDIO'] ?? "",
+          stock: json['STOCK'] ?? "",
+          exhibicion: (json['EXHIBICION'] != null && json['EXHIBICION'] != "")
+              ? int.parse(json['EXHIBICION'])
+              : 0,
+          condVta: json['COND_VTA'] ?? "",
+          promoHasta: json['PROMOHASTA'] ?? "",
+          categPub: json['CATEG_PUB'] ?? "",
+          promoSucursales: json['PROMOSUCURSALES'] ?? "",
+          imagen: json['IMAGEN'] ?? "",
+          nombre: json['NOMBRE'] ?? "",
+          imagenes:
+              (json['IMAGENES'] != null) ? List.from(json["IMAGENES"]) : [],
+          bin: json['BIN'] ?? 0,
+          bm: json['BM'] ?? 0,
+          exhibT: json['EXHIB_T'],
+          exhibE: json['EXHIB_E'],
+          exhibA: json['EXHIB_A'],
+          estacional: json['ESTACIONAL'],
+          minimo: json['MINIMO'],
+          exhNMax: json['EXH_N_MAX'],
+          exhEtMax: json['EXH_ET_MAX'],
+          hVigEst: json['H_VIG_EST'],
+          hVigExh: json["H_VIG_EXH"]);
+
+    return consulta;
+  }
+
+  limpiar(){
+    this.idArtic="";
   }
 }

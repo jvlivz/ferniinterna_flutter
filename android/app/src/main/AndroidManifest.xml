@@ -1,7 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.ferniplast.ferniinterna">
-  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"  />
-  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"  />
-  <application android:label="ferniinterna" android:icon="@mipmap/ic_launcher">
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"   />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"   />
+  <uses-permission android:name="android.permission.INTERNET" /> 
+
+  <application android:label="ferniinterna" android:icon="@mipmap/ic_launcher" android:usesCleartextTraffic="true">
     <activity android:name=".MainActivity"
               android:launchMode="singleTop"
               android:theme="@style/LaunchTheme"
@@ -15,7 +17,7 @@
       <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
-                />
+                 />
       <!-- Displays an Android View that continues showing the launch screen
                  Drawable until Flutter paints its first frame, then this splash
                  screen fades out. A splash screen is useful to avoid any visual
@@ -24,7 +26,7 @@
       <meta-data
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
               android:resource="@drawable/launch_background"
-                />
+                 />
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
@@ -34,8 +36,10 @@
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
     <meta-data
             android:name="flutterEmbedding"
-            android:value="2"   />
+            android:value="2"    />
 
-    
+      
+
   </application>
+  
 </manifest>

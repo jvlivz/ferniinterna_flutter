@@ -4,10 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 //import 'package:connectivity/connectivity.dart';
 
 class Util {
-  static String obtenerIpSucursal({bool esPrecios=false}) {
+  static String obtenerIpSucursal({bool esPrecios = false}) {
     var ip = "192.168.3.253";
-if (esPrecios)
-ip = "192.168.3.204";
+    if (esPrecios) ip = "192.168.3.204";
 //ToDo:Sacar.
     return ip;
     /* try {
@@ -53,7 +52,7 @@ ip = "192.168.3.204";
     return ip; */
   }
 
-  static String obtenerIDSucursal({bool esPrecios=false}) {
+  static String obtenerIDSucursal({bool esPrecios = false}) {
     String ip = obtenerIpSucursal(esPrecios: esPrecios);
 
     if (ip.startsWith("192.168.1.")) return "F1";
@@ -71,16 +70,16 @@ ip = "192.168.3.204";
     return "";
   }
 
-  static bool esSucursal( {bool esPrecios=false}) {
-    String ipSucursalResult = Util.obtenerIpSucursal(esPrecios:esPrecios);
+  static bool esSucursal({bool esPrecios = false}) {
+    String ipSucursalResult = Util.obtenerIpSucursal(esPrecios: esPrecios);
 
     if (ipSucursalResult != "192.168.9.245") return true;
 
     return false;
   }
 
-  static String urlBase({bool esPrecios=false}) {
-    String sucursalResult = obtenerIpSucursal(esPrecios:esPrecios);
+  static String urlBase({bool esPrecios = false}) {
+    String sucursalResult = obtenerIpSucursal(esPrecios: esPrecios);
 
     return "http://" + sucursalResult + "/";
   }
@@ -88,9 +87,23 @@ ip = "192.168.3.204";
   static launchURL(String url) async {
     print("launching " + url);
     //if (await canLaunch(url)) {
-      await launch(url);
+    await launch(url);
     //} else {
     //  throw 'Could not launch $url';
     //}
+  }
+
+  static bool isDouble(String s) {
+    if (s == null || s.trim() == "") {
+      return false;
+    }
+    return double.tryParse(s) != null;
+  }
+
+  static bool isInteger(String s) {
+    if (s == null || s.trim() == "") {
+      return false;
+    }
+    return int.tryParse(s) != null;
   }
 }

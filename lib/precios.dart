@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:ferniinterna/Consulta.dart';
 import 'package:ferniinterna/Usuario.dart';
 import 'package:ferniinterna/util.dart';
@@ -23,24 +24,35 @@ class _PreciosState extends State<Precios> {
   final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
   final txtCodigoController = TextEditingController();
   final txtUsuarioController = TextEditingController();
+  final txtCantController = TextEditingController();
+  final txtPrecioController = TextEditingController();
 
   Consulta datos = new Consulta();
+
   List<String> listaUltimos = [];
   String ultimos = "";
   List data = [];
   List<DropdownMenuItem<String>> impresoras = [];
   String _impresoraSeleccionada = "";
+  bool mostrarOfertaEspecial = false;
+  double precioEspecial = 0;
+  int cantidadEspecial = 0;
+  String codigoUsuario = "";
+  String nombreUsuario = "";
 
   void cargaUsuario() async {
     // Obtain shared preferences.
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString('login_user') != null)
-      txtUsuarioController.value = TextEditingValue(
-        text: prefs.getString('login_user').toString(),
-        selection: TextSelection.fromPosition(
-          TextPosition(offset: prefs.getString('login_user').toString().length),
-        ),
-      );
+      setState(() {
+        codigoUsuario = prefs.getString('login_user').toString();
+      });
+    txtUsuarioController.value = TextEditingValue(
+      text: codigoUsuario,
+      selection: TextSelection.fromPosition(
+        TextPosition(offset: codigoUsuario.length),
+      ),
+    );
   }
 
   Future<String> leerImpresoras() async {
@@ -57,9 +69,12 @@ class _PreciosState extends State<Precios> {
               DropdownMenuItem(child: Text(item), value: item.toString()))
           .toList();
 
-      impresoras.insert(0,
-          DropdownMenuItem(child: Text("Sistema ERP"), value: "Sistema ERP"));
-      _impresoraSeleccionada = "Sistema ERP";
+      impresoras.insert(
+          0,
+          DropdownMenuItem(
+              child: Text("Sistema de Precios (ERP)"),
+              value: "Sistema de Precios (ERP)"));
+      _impresoraSeleccionada = "Sistema de Precios (ERP)";
     });
     print(resBody);
 
@@ -93,13 +108,17 @@ class _PreciosState extends State<Precios> {
     print(response.body);
 
     setState(() {
+      cantidadEspecial = 0;
+      precioEspecial = 0;
+      mostrarOfertaEspecial = false;
       datos = Consulta.fromJson(parsedJson);
     });
   }
 
   void initState() {
     super.initState();
-
+    cargaUsuario();
+    leerImpresoras();
 //    WidgetsBinding.instance.addPostFrameCallback((_) => leerDatos());
   }
 
@@ -114,9 +133,6 @@ class _PreciosState extends State<Precios> {
 
     String idSucursal = "";
     idSucursal = Util.obtenerIDSucursal();
-
-    if (impresoras.length == 0) leerImpresoras();
-    cargaUsuario();
 
     return Scaffold(
       appBar: AppBar(
@@ -151,9 +167,15 @@ class _PreciosState extends State<Precios> {
                           autofocus: true,
                           enableSuggestions: false,
                           maxLength: 4,
+                          onChanged: (String str) {
+                            setState(() {
+                             codigoUsuario="";
+                             nombreUsuario="";
+                            });
+                          },
                           onSubmitted: (String str) {
                             setState(() {
-                              buscaUsuario(str);
+                              buscaUsuario(str, context);
                             });
                           },
                           decoration: InputDecoration(
@@ -318,6 +340,202 @@ class _PreciosState extends State<Precios> {
                                     ),
                                   ),
                                 ),
+                              if (datos.condVta != "" &&
+                                  datos.condVta.toString().toLowerCase() == "n")
+                                Card(
+                                  color: Colors.yellow,
+                                  child: ListTile(
+                                    contentPadding:
+                                        EdgeInsets.fromLTRB(15, 10, 25, 0),
+                                    title: Text("Atención"),
+                                    subtitle:
+                                        Text("Artículo en Colas de Stock"),
+                                  ),
+                                ),
+                              if (datos.idArtic != "")
+                                Card(
+                                  color: Colors.white70,
+                                  child: ListTile(
+                                    contentPadding:
+                                        EdgeInsets.fromLTRB(15, 10, 25, 0),
+                                    title: Text("Tipo de etiqueta"),
+                                    subtitle: Row(
+                                      children: [
+                                        Expanded(
+                                            flex: 2,
+                                            child: Column(children: [
+                                              Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 8, 4, 8),
+                                                child: TextButton.icon(
+                                                  style: TextButton.styleFrom(
+                                                      primary: Colors.red,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      minimumSize:
+                                                          Size.fromHeight(50)),
+                                                  icon: Icon(Icons.money),
+                                                  label: Text("Oferta"),
+                                                  onPressed: () => setState(() {
+                                                    mostrarOfertaEspecial =
+                                                        true;
+                                                    txtPrecioController.value =
+                                                        TextEditingValue(
+                                                            text: "");
+                                                    txtCantController.value =
+                                                        TextEditingValue(
+                                                            text: "");
+                                                  }),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 0, 4, 0),
+                                                child: TextButton.icon(
+                                                  style: TextButton.styleFrom(
+                                                      primary: Colors.blue,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      minimumSize:
+                                                          Size.fromHeight(50)),
+                                                  icon: Icon(Icons.crop_5_4),
+                                                  label: Text("Normal"),
+                                                  onPressed: () =>
+                                                      imprimir(2, datos),
+                                                ),
+                                              ),
+                                            ])),
+                                        Expanded(
+                                            flex: 2,
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      4, 8, 0, 8),
+                                                  child: TextButton.icon(
+                                                    style: TextButton.styleFrom(
+                                                        primary: Colors.indigo,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        minimumSize:
+                                                            Size.fromHeight(
+                                                                50)),
+                                                    icon: Icon(
+                                                        Icons.crop_portrait),
+                                                    label: Text("Destacado"),
+                                                    onPressed: () =>
+                                                        imprimir(1, datos),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      4, 0, 0, 0),
+                                                  child: TextButton.icon(
+                                                    style: TextButton.styleFrom(
+                                                        primary: Colors.black,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        minimumSize:
+                                                            Size.fromHeight(
+                                                                50)),
+                                                    icon: Icon(Icons.crop_7_5),
+                                                    label: Text("Perfu"),
+                                                    onPressed: () =>
+                                                        imprimir(3, datos),
+                                                  ),
+                                                )
+                                              ],
+                                            ))
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              if (mostrarOfertaEspecial)
+                                Card(
+                                    color: Colors.white70,
+                                    child: ListTile(
+                                        contentPadding:
+                                            EdgeInsets.fromLTRB(15, 10, 25, 0),
+                                        title: Text("Etiqueta Especial"),
+                                        subtitle: Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 3,
+                                              child: TextField(
+                                                controller: txtCantController,
+                                                autocorrect: false,
+                                                autofocus: true,
+                                                enableSuggestions: false,
+                                                maxLength: 3,
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    hintText: 'Cantidad',
+                                                    counterStyle: TextStyle(
+                                                      height:
+                                                          double.minPositive,
+                                                    ),
+                                                    counterText: ""),
+                                              ),
+                                            ),
+                                            Text("x"),
+                                            Expanded(
+                                              flex: 3,
+                                              child: TextField(
+                                                controller: txtPrecioController,
+                                                autocorrect: false,
+                                                autofocus: true,
+                                                enableSuggestions: false,
+                                                maxLength: 9,
+                                                onSubmitted: (String str) {
+                                                  setState(() {
+                                                    imprimirEspecial(
+                                                        datos,
+                                                        txtCantController
+                                                            .value.text,
+                                                        txtPrecioController
+                                                            .value.text);
+                                                  });
+                                                },
+                                                keyboardType: TextInputType
+                                                    .numberWithOptions(
+                                                        signed: false,
+                                                        decimal: true),
+                                                decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    hintText: 'Precio',
+                                                    counterStyle: TextStyle(
+                                                      height:
+                                                          double.minPositive,
+                                                    ),
+                                                    counterText: ""),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 1,
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    imprimirEspecial(
+                                                        datos,
+                                                        txtCantController
+                                                            .value.text,
+                                                        txtPrecioController
+                                                            .value.text);
+                                                  });
+                                                },
+                                                icon: Icon(Icons.done,
+                                                    size: MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        .1),
+                                              ),
+                                            ),
+                                          ],
+                                        ))),
                               if (datos.idArtic != "")
                                 Card(
                                   color: Colors.white70,
@@ -599,110 +817,6 @@ class _PreciosState extends State<Precios> {
                                     ),
                                   ),
                                 ),
-                              if (datos.condVta != "" &&
-                                  datos.condVta.toString().toLowerCase() == "n")
-                                Card(
-                                  color: Colors.yellow,
-                                  child: ListTile(
-                                    contentPadding:
-                                        EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                    title: Text("Atención"),
-                                    subtitle:
-                                        Text("Artículo en Colas de Stock"),
-                                  ),
-                                ),
-                              if (datos.idArtic != "")
-                                Card(
-                                  color: Colors.white70,
-                                  child: ListTile(
-                                    contentPadding:
-                                        EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                    title: Text("Tipo de etiqueta"),
-                                    subtitle: Row(
-                                      children: [
-                                        Expanded(
-                                            flex: 2,
-                                            child: Column(children: [
-                                              Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 8, 4, 8),
-                                                child: TextButton.icon(
-                                                  style: TextButton.styleFrom(
-                                                      primary: Colors.red,
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      minimumSize:
-                                                          Size.fromHeight(50)),
-                                                  icon: Icon(Icons.money),
-                                                  label: Text("Oferta"),
-                                                  onPressed: () => print(
-                                                      "Button Clicked!" +
-                                                          datos.idArtic
-                                                              .toString()),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 0, 4, 0),
-                                                child: TextButton.icon(
-                                                  style: TextButton.styleFrom(
-                                                      primary: Colors.blue,
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      minimumSize:
-                                                          Size.fromHeight(50)),
-                                                  icon: Icon(Icons.crop_5_4),
-                                                  label: Text("Normal"),
-                                                  onPressed: () =>
-                                                      print("Button Clicked!"),
-                                                ),
-                                              ),
-                                            ])),
-                                        Expanded(
-                                            flex: 2,
-                                            child: Column(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      4, 8, 0, 8),
-                                                  child: TextButton.icon(
-                                                    style: TextButton.styleFrom(
-                                                        primary: Colors.indigo,
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        minimumSize:
-                                                            Size.fromHeight(
-                                                                50)),
-                                                    icon: Icon(
-                                                        Icons.crop_portrait),
-                                                    label: Text("Destacado"),
-                                                    onPressed: () => print(
-                                                        "Button Clicked!"),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      4, 0, 0, 0),
-                                                  child: TextButton.icon(
-                                                    style: TextButton.styleFrom(
-                                                        primary: Colors.black,
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        minimumSize:
-                                                            Size.fromHeight(
-                                                                50)),
-                                                    icon: Icon(Icons.crop_7_5),
-                                                    label: Text("Perfu"),
-                                                    onPressed: () =>
-                                                        imprimir(3, datos),
-                                                  ),
-                                                )
-                                              ],
-                                            ))
-                                      ],
-                                    ),
-                                  ),
-                                ),
                               Card(
                                 child: ListTile(
                                   contentPadding:
@@ -710,7 +824,7 @@ class _PreciosState extends State<Precios> {
                                   title: Text("Últimos precios realizados"),
                                   subtitle: Text(
                                     ultimos,
-                                    style: TextStyle(fontSize: 9),
+                                    style: TextStyle(fontSize: 10),
                                   ),
                                 ),
                               ),
@@ -732,25 +846,147 @@ class _PreciosState extends State<Precios> {
     );
   }
 
-  imprimir(int i, Consulta datos) {
-    listaUltimos.insert(0, datos.descripcion.toString() + "\n");
+  imprimir(int i, Consulta datos) async {
+    String textoAlerta = "";
 
-    if (listaUltimos.length > 10) listaUltimos.removeAt(10);
+    try {
+      if (codigoUsuario != "") {
+        String urlBase = Util.urlBase(esPrecios: true);
+        final prefs = await SharedPreferences.getInstance();
 
-    setState(() => ultimos = listaUltimos.join("\n"));
+        String impresora = "";
+
+        if (_impresoraSeleccionada != "Sistema de Precios (ERP)")
+          impresora = "&imp=" +
+              _impresoraSeleccionada.replaceAll("Impresora Portatil #", "");
+
+        var res = await http.get(Uri.parse(urlBase +
+            "verificadores/consulta.aspx?prec=1&sku=" +
+            datos.idArtic.toString() +
+            "&bar=" +
+            datos.idArtic.toString() +
+            "&usu=" +
+            codigoUsuario +
+            "&tetq=3&ope=" +
+            codigoUsuario +
+            "&UO=" +
+            cantidadEspecial.toString() +
+            "&PO=" +
+            ((precioEspecial == 0) ? "0" : precioEspecial.toString()) +
+            impresora));
+
+        var resBody = json.decode(res.body.replaceAll(":NULL", ":null"));
+
+        if (resBody["CODIGO"] != "") {
+          listaUltimos.insert(0, datos.descripcion.toString() + "\n");
+
+          if (listaUltimos.length > 10) listaUltimos.removeAt(10);
+
+          setState(() {
+            cantidadEspecial = 0;
+            precioEspecial = 0;
+            mostrarOfertaEspecial = false;
+            ultimos = listaUltimos.join("\n");
+          });
+        }
+      } else {
+        SnackBar snackBar = SnackBar(
+          content: Text(
+              "◔_◔...No me dijiste quien sos, completá tu usuario por favor..."),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } catch (error) {
+      textoAlerta =
+          "⊙﹏⊙... se produjo un error al enviar los datos de etiquetas.";
+      txtUsuarioController.value = TextEditingValue(text: "");
+    }
+// Find the ScaffoldMessenger in the widget tree
+// and use it to show a SnackBar.
+
+    SnackBar snackBar = SnackBar(
+      content: Text(textoAlerta),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  void buscaUsuario(String str) async {
+  void buscaUsuario(String str, BuildContext contexto) async {
+    String textoAlerta = "";
+    String codigoUsuario = "";
+    String nombreUsuario = "";
     String urlBase = Util.urlBase();
-    var res = await http
-        .get(Uri.parse(urlBase + "verificadores/consulta.aspx?ope=" + str));
-
-    var resBody = json.decode(res.body);
-    Usuario u=Usuario.fromJson(resBody);
-
-    // Obtain shared preferences.
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('login_user', str);
+    try {
+      var res = await http
+          .get(Uri.parse(urlBase + "verificadores/consulta.aspx?ope=" + str));
+
+      var resBody = json.decode(res.body.replaceAll(":NULL", ":null"));
+
+      if (resBody["CODIGO"] != "") {
+        // Obtain shared preferences.
+
+        await prefs.setString('login_name', resBody["NOMBRE"]);
+        await prefs.setString('login_user', resBody["CODIGO"]);
+        codigoUsuario = resBody["CODIGO"];
+        nombreUsuario = resBody["NOMBRE"];
+        textoAlerta = "♥‿♥ Hola " + resBody["NOMBRE"];
+        txtUsuarioController.value =
+            TextEditingValue(text: resBody["CODIGO"].toString().trim());
+      } else {
+        await prefs.remove('login_name');
+        await prefs.remove('login_user');
+        codigoUsuario = "";
+        nombreUsuario = "";
+        textoAlerta = "◔_◔... No encuentro tu usuario en el sistema.";
+        txtUsuarioController.value = TextEditingValue(text: "");
+      }
+    } catch (error) {
+      await prefs.remove('login_name');
+      await prefs.remove('login_user');
+      codigoUsuario = "";
+      nombreUsuario = "";
+      textoAlerta =
+          "⊙﹏⊙... se produjo un error al obtener los datos de tu usuario.";
+      txtUsuarioController.value = TextEditingValue(text: "");
+    }
+// Find the ScaffoldMessenger in the widget tree
+// and use it to show a SnackBar.
+
+    setState(() {
+      this.codigoUsuario = codigoUsuario;
+      this.nombreUsuario = nombreUsuario;
+    });
+    SnackBar snackBar = SnackBar(
+      content: Text(textoAlerta),
+    );
+    ScaffoldMessenger.of(contexto).showSnackBar(snackBar);
+  }
+
+  void imprimirEspecial(Consulta datos, String cantidad, String precio) {
+    if (Util.isInteger(cantidad) &&
+        Util.isDouble(precio) &&
+        int.parse(cantidad) > 0 &&
+        int.parse(cantidad) < 1000 &&
+        double.parse(precio) > 0 &&
+        double.parse(precio) < 99999) {
+      setState(() {
+        precioEspecial = double.parse(
+            double.parse(precio.replaceAll(",", ".")).toStringAsFixed(2));
+        cantidadEspecial = int.parse(cantidad);
+      });
+
+      SnackBar snackBar = SnackBar(
+        content: Text(
+            "Ahora por favor seleccione el tamaño de etiqueta a imprimir:\n\nDestacado, normal o perfu..."),
+        duration: Duration(seconds: 5),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      SnackBar snackBar = SnackBar(
+        content: Text("Verifique los datos ingresados!"),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 }
 
