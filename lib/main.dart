@@ -1,3 +1,4 @@
+import 'package:ferniinterna/Inventario.dart';
 import 'package:ferniinterna/Login.dart';
 import 'package:ferniinterna/exhibiciones.dart';
 import 'package:ferniinterna/precios.dart';
@@ -233,7 +234,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           texto: "Inventario",
                           colorIcono: Colors.amber,
                           icono: LineIcons.checkSquare,
-                          onPressed: () => print("Button Clicked!")),
+                           onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Inventario()),
+                              )),
                       SquareButton(
                           texto: "Mono",
                           colorIcono: Color.fromARGB(255, 47, 201, 9),

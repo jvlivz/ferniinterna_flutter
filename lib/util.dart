@@ -1,5 +1,6 @@
 //import 'dart:io';
 //import 'package:network_info_plus/network_info_plus.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:connectivity/connectivity.dart';
 
@@ -105,5 +106,15 @@ class Util {
       return false;
     }
     return int.tryParse(s) != null;
+  }
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
   }
 }
