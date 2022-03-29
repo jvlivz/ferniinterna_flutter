@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'DetailScreen.dart';
@@ -27,6 +28,8 @@ class _InventarioState extends State<Inventario> {
   final txtCantController = TextEditingController();
   final txtPrecioController = TextEditingController();
   final txtUbicacionController = TextEditingController();
+  late FocusNode codigoFocus;
+
   Consulta datos = new Consulta();
 
   List<String> listaUltimos = [];
@@ -73,6 +76,25 @@ class _InventarioState extends State<Inventario> {
     leerDatos(barcodeScanRes);
   }
 
+  void leerBarraUbicacion() async {
+    String barcodeScanRes = "";
+
+    barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+        '#FF0000', "Cancelar", true, ScanMode.BARCODE);
+
+    txtUbicacionController.value = TextEditingValue(
+      text: barcodeScanRes,
+      selection: TextSelection.fromPosition(
+        TextPosition(offset: barcodeScanRes.length),
+      ),
+    );
+
+    if (verificarUbicacion(barcodeScanRes, context))
+      txtUbicacionController.text = barcodeScanRes;
+    else
+      txtUbicacionController.text = "";
+  }
+
   void leerDatos(String codigo) async {
     String urlBase = Util.urlBase();
 
@@ -91,9 +113,18 @@ class _InventarioState extends State<Inventario> {
 
   void initState() {
     super.initState();
+    codigoFocus = FocusNode();
     cargaUsuario();
 
 //    WidgetsBinding.instance.addPostFrameCallback((_) => leerDatos());
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    codigoFocus.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -162,24 +193,14 @@ class _InventarioState extends State<Inventario> {
                         ),
                       ),
                       Expanded(
-                        flex: 4,
+                        flex: 3,
                         child: TextField(
                           controller: txtUbicacionController,
                           autocorrect: false,
                           enableSuggestions: false,
                           maxLines: 1,
-                          onSubmitted: (String newVal) {
-                            if (newVal.length != 13 ||
-                                (!newVal.toLowerCase().startsWith('d') &&
-                                    !newVal.toLowerCase().startsWith('p'))) {
-                              txtUbicacionController.text = "";
-
-                              SnackBar snackBar = SnackBar(
-                                content: Text("◔_◔...Ubicación no válida..."),
-                              );
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                            }
+                          onSubmitted: (String ubicacion) {
+                            verificarUbicacion(ubicacion, context);
                           },
                           maxLength: 13,
                           inputFormatters: [
@@ -196,6 +217,16 @@ class _InventarioState extends State<Inventario> {
                               counterText: ""),
                         ),
                       ),
+                      Expanded(
+                        flex: 1,
+                        child: IconButton(
+                          onPressed: () {
+                            leerBarraUbicacion();
+                          },
+                          icon: Icon(LineIcons.barcode,
+                              size: MediaQuery.of(context).size.width * .1),
+                        ),
+                      ),
                     ]),
                     Row(
                       children: [
@@ -204,6 +235,7 @@ class _InventarioState extends State<Inventario> {
                           child: TextField(
                             controller: txtCodigoController,
                             autocorrect: false,
+                            focusNode: codigoFocus,
                             autofocus: true,
                             enableSuggestions: false,
                             maxLength: 13,
@@ -231,7 +263,7 @@ class _InventarioState extends State<Inventario> {
                                 leerDatos(txtCodigoController.text);
                               });
                             },
-                            icon: Icon(Icons.search,
+                            icon: Icon(LineIcons.search,
                                 size: MediaQuery.of(context).size.width * .1),
                           ),
                         ),
@@ -367,20 +399,9 @@ class _InventarioState extends State<Inventario> {
                                               autofocus: true,
                                               enableSuggestions: false,
                                               maxLength: 13,
-                                              onSubmitted: (String newVal) {
-                                                if (newVal is int ||
-                                                    newVal ==
-                                                        num.parse(newVal)
-                                                            .roundToDouble()) {
-                                                  txtCantController.text = "";
-
-                                                  SnackBar snackBar = SnackBar(
-                                                    content: Text(
-                                                        "◔_◔...cantidad no válida..."),
-                                                  );
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(snackBar);
-                                                }
+                                              onSubmitted: (String cantidad) {
+                                                verificarCantidad(
+                                                    cantidad, context);
                                               },
                                               inputFormatters: [
                                                 UpperCaseTextFormatter(),
@@ -411,99 +432,16 @@ class _InventarioState extends State<Inventario> {
                                               icon: Icon(Icons.check),
                                               label: Text(""),
                                               onPressed: () => {
-                                                    inventariar(2, "", datos),
+                                                    inventariar(
+                                                        txtCantController.text,
+                                                        "",
+                                                        datos),
                                                   }),
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
-                              if (mostrarOfertaEspecial)
-                                Card(
-                                    color: Colors.white70,
-                                    child: ListTile(
-                                        contentPadding:
-                                            EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                        title: Text("Etiqueta Especial"),
-                                        subtitle: Row(
-                                          children: [
-                                            Expanded(
-                                              flex: 3,
-                                              child: TextField(
-                                                controller: txtCantController,
-                                                autocorrect: false,
-                                                autofocus: true,
-                                                enableSuggestions: false,
-                                                maxLength: 3,
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                decoration: InputDecoration(
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    hintText: 'Cantidad',
-                                                    counterStyle: TextStyle(
-                                                      height:
-                                                          double.minPositive,
-                                                    ),
-                                                    counterText: ""),
-                                              ),
-                                            ),
-                                            Text("x"),
-                                            Expanded(
-                                              flex: 3,
-                                              child: TextField(
-                                                controller: txtPrecioController,
-                                                autocorrect: false,
-                                                autofocus: true,
-                                                enableSuggestions: false,
-                                                maxLength: 9,
-                                                onSubmitted: (String str) {
-                                                  setState(() {
-                                                    imprimirEspecial(
-                                                        datos,
-                                                        txtCantController
-                                                            .value.text,
-                                                        txtPrecioController
-                                                            .value.text);
-                                                  });
-                                                },
-                                                keyboardType: TextInputType
-                                                    .numberWithOptions(
-                                                        signed: false,
-                                                        decimal: true),
-                                                decoration: InputDecoration(
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    hintText: 'Precio',
-                                                    counterStyle: TextStyle(
-                                                      height:
-                                                          double.minPositive,
-                                                    ),
-                                                    counterText: ""),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 1,
-                                              child: IconButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    imprimirEspecial(
-                                                        datos,
-                                                        txtCantController
-                                                            .value.text,
-                                                        txtPrecioController
-                                                            .value.text);
-                                                  });
-                                                },
-                                                icon: Icon(Icons.done,
-                                                    size: MediaQuery.of(context)
-                                                            .size
-                                                            .width *
-                                                        .1),
-                                              ),
-                                            ),
-                                          ],
-                                        ))),
                               if (datos.idArtic != "")
                                 Card(
                                   color: Colors.white70,
@@ -814,55 +752,104 @@ class _InventarioState extends State<Inventario> {
     );
   }
 
-  inventariar(int cantidad, String ubicacion, Consulta datos) async {
+  bool verificarCantidad(String cantidad, BuildContext context) {
+    if (cantidad.length == 0 || !Util.isInteger(cantidad)) {
+      txtCantController.text = "";
+
+      SnackBar snackBar = SnackBar(
+        content: Text("◔_◔...cantidad no válida..."),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return false;
+    }
+
+    return true;
+  }
+
+  bool verificarUbicacion(String ubicacion, BuildContext context) {
+    if (ubicacion.length != 13 ||
+        (!ubicacion.toLowerCase().startsWith('d') &&
+            !ubicacion.toLowerCase().startsWith('p'))) {
+      txtUbicacionController.text = "";
+
+      SnackBar snackBar = SnackBar(
+        content: Text("◔_◔...Ubicación no válida..."),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return false;
+    }
+
+    return true;
+  }
+
+  inventariar(String cantidad, String ubicacion, Consulta datos) async {
     String textoAlerta = "";
 
     try {
-      if (txtCantController.text.length == 0 ||
-          !Util.isInteger(txtCantController.text)) {
-        txtCantController.text = "";
-
-        SnackBar snackBar = SnackBar(
-          content: Text("◔_◔...cantidad no válida..."),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        return;
-      }
+      if (!verificarCantidad(txtCantController.text, context) ||
+          !verificarUbicacion(txtUbicacionController.text, context)) return;
 
       if (codigoUsuario != "") {
-        String urlBase = Util.urlBase(esPrecios: false);
         final prefs = await SharedPreferences.getInstance();
 
-        String impresora = "";
+        FocusManager.instance.primaryFocus?.unfocus();
+        if (prefs.getString("login_user") != codigoUsuario) {
+          SnackBar snackBar = SnackBar(
+            content: Text("◔_◔...verificá tu usuario..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
 
-        var res = await http.get(Uri.parse(urlBase +
-            "verificadores/consulta.aspx?prec=1&sku=" +
+        String url = Util.urlBase(esPrecios: false) +
+            "verificadores/consulta.aspx?inv=1&sku=" +
             datos.idArtic.toString() +
             "&bar=" +
             datos.idArtic.toString() +
             "&usu=" +
             codigoUsuario +
-            "&tetq=3&ope=" +
+            "&ope=" +
             codigoUsuario +
-            "&UO=" +
-            cantidadEspecial.toString() +
-            "&PO=" +
-            ((precioEspecial == 0) ? "0" : precioEspecial.toString()) +
-            impresora));
+            "&qty=" +
+            cantidad +
+            "&loc=" +
+            txtUbicacionController.text;
 
-        var resBody = json.decode(res.body.replaceAll(":NULL", ":null"));
+        var res = await http.get(Uri.parse(url));
 
-        if (resBody["CODIGO"] != "") {
-          listaUltimos.insert(0, datos.descripcion.toString() + "\n");
+        var resBody =
+            json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
+
+        if (resBody["invetariook"] == true) {
+          listaUltimos.insert(
+              0,
+              cantidad +
+                  " x " +
+                  datos.idArtic.toString() +
+                  " " +
+                  datos.descripcion.toString() +
+                  "\n");
 
           if (listaUltimos.length > 10) listaUltimos.removeAt(10);
 
           setState(() {
+            txtCantController.text = "";
+            txtCodigoController.text = "";
+            datos.limpiar();
+            FocusManager.instance.primaryFocus?.unfocus();
+            codigoFocus.requestFocus();
+
             cantidadEspecial = 0;
             precioEspecial = 0;
             mostrarOfertaEspecial = false;
             ultimos = listaUltimos.join("\n");
           });
+        } else {
+          SnackBar snackBar = SnackBar(
+            content: Text("◔_◔...Hubo un problema: " +
+                resBody["mensaje"].toString() +
+                " ..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       } else {
         SnackBar snackBar = SnackBar(
@@ -873,7 +860,7 @@ class _InventarioState extends State<Inventario> {
       }
     } catch (error) {
       textoAlerta =
-          "⊙﹏⊙... se produjo un error al enviar los datos de etiquetas.";
+          "⊙﹏⊙... se produjo un error al enviar los datos de inventario.";
       txtUsuarioController.value = TextEditingValue(text: "");
     }
 // Find the ScaffoldMessenger in the widget tree
