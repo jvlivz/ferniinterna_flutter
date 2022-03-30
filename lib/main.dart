@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    Util.verificarRed();
     return MaterialApp(
       title: 'Ferniplast',
       theme: ThemeData(
@@ -56,17 +57,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,14 +105,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 abrirFerniplastCom();
               },
             ),
-            ListTile(
-              title: const Text('Descuento Empleados'),
-              leading: Icon(Icons.recent_actors),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-              },
-            ),
+            if (Util.esAutorizado())
+              ListTile(
+                title: const Text('Descuento Empleados'),
+                leading: Icon(Icons.recent_actors),
+                onTap: () {
+                  // Update the state of the app.
+                  // ...
+                },
+              ),
             ListTile(
               title: const Text('Facebook grupo Ferni'),
               leading: Icon(Icons.groups),
@@ -198,67 +189,75 @@ class _MyHomePageState extends State<MyHomePage> {
                           icono: LineIcons.tag,
                           colorIcono: Colors.deepPurple,
                           onPressed: () => abrirOfertas()),
-                      SquareButton(
-                          texto: "Verificador",
-                          icono: LineIcons.barcode,
-                          colorIcono: Colors.green,
-                          onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Verificador()),
-                              )),
-                      SquareButton(
-                          texto: "Imprimir precios",
-                          icono: LineIcons.receipt,
-                          colorIcono: Colors.lightBlue,
-                          onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Precios()),
-                              )),
-                      SquareButton(
-                          texto: "Exhibiciones",
-                          colorIcono: Colors.deepOrange,
-                          icono: LineIcons.shapes,
-                          onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Login()),
-                              )),
-                      SquareButton(
-                          texto: "FerniOnline",
-                          colorIcono: Colors.indigo,
-                          icono: LineIcons.shoppingCart,
-                          onPressed: () => print("Button Clicked!")),
-                      SquareButton(
-                          texto: "Inventario",
-                          colorIcono: Colors.amber,
-                          icono: LineIcons.checkSquare,
-                           onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Inventario()),
-                              )),
-                      SquareButton(
-                          texto: "Mono",
-                          colorIcono: Color.fromARGB(255, 47, 201, 9),
-                          icono: LineIcons.book,
-                          onPressed: () => abrirmono()),
+                      if (Util.esAutorizado())
+                        SquareButton(
+                            texto: "Verificador",
+                            icono: LineIcons.barcode,
+                            colorIcono: Colors.green,
+                            onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Verificador()),
+                                )),
+                      if (Util.esAutorizado())
+                        SquareButton(
+                            texto: "Imprimir precios",
+                            icono: LineIcons.receipt,
+                            colorIcono: Colors.lightBlue,
+                            onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Precios()),
+                                )),
+                      if (Util.esAutorizado())
+                        SquareButton(
+                            texto: "Exhibiciones",
+                            colorIcono: Colors.deepOrange,
+                            icono: LineIcons.shapes,
+                            onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Login()),
+                                )),
+                      if (Util.esAutorizado())
+                        SquareButton(
+                            texto: "FerniOnline",
+                            colorIcono: Colors.indigo,
+                            icono: LineIcons.shoppingCart,
+                            onPressed: () => print("Button Clicked!")),
+                      if (Util.esAutorizado())
+                        SquareButton(
+                            texto: "Inventario",
+                            colorIcono: Colors.amber,
+                            icono: LineIcons.checkSquare,
+                            onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Inventario()),
+                                )),
+                      if (Util.esAutorizado())
+                        SquareButton(
+                            texto: "Mono",
+                            colorIcono: Color.fromARGB(255, 47, 201, 9),
+                            icono: LineIcons.book,
+                            onPressed: () => abrirmono()),
                       SquareButton(
                           texto: "#ActitudFerni",
                           colorIcono: Color.fromARGB(255, 206, 63, 19),
                           icono: LineIcons.peopleCarry,
                           onPressed: () => abrirDDOO()),
-                      SquareButton(
-                          texto: "Intranet",
-                          colorIcono: Color.fromARGB(255, 19, 98, 202),
-                          icono: LineIcons.confluence,
-                          onPressed: () => abrirIntranet()),
-                      SquareButton(
-                          texto: "Novedades Mkt",
-                          colorIcono: Color.fromARGB(255, 219, 80, 16),
-                          icono: LineIcons.newspaper,
-                          onPressed: () => abrirMkt()),
+                      if (Util.esAutorizado())
+                        SquareButton(
+                            texto: "Intranet",
+                            colorIcono: Color.fromARGB(255, 19, 98, 202),
+                            icono: LineIcons.confluence,
+                            onPressed: () => abrirIntranet()),
+                      if (Util.esAutorizado())
+                        SquareButton(
+                            texto: "Novedades Mkt",
+                            colorIcono: Color.fromARGB(255, 219, 80, 16),
+                            icono: LineIcons.newspaper,
+                            onPressed: () => abrirMkt()),
                       SquareButton(
                           texto: "Facebook",
                           colorIcono: Color.fromARGB(255, 52, 118, 218),
@@ -269,6 +268,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           colorIcono: Color.fromARGB(255, 218, 52, 163),
                           icono: LineIcons.instagram,
                           onPressed: () => abrirInstagram()),
+                      SquareButton(
+                          texto: "TikTok",
+                          colorIcono: Color.fromARGB(255, 52, 218, 80),
+                          icono: LineIcons.video,
+                          onPressed: () => abrirTiktok()),
                     ]),
               )
             ],
@@ -334,6 +338,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void abrirMkt() {
     Util.launchURL("http://192.168.100.245/marketing/");
   }
+
+  void abrirTiktok() {
+    Util.launchURL("https://www.tiktok.com/@ferniplastoficial?lang=es");
+  }
 }
 
 class SquareButton extends StatelessWidget {
@@ -383,7 +391,6 @@ class SquareButton extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontSize: MediaQuery.of(context).size.width * .025,
-                           
                           color: Colors.grey[700]),
                     ))
                   ]),

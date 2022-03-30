@@ -106,7 +106,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     String textoAlerta = "";
     String codigoUsuario = "";
     String nombreUsuario = "";
-    String urlBase = Util.urlBase();
+    String urlBase = await Util.urlBase();
     final prefs = await SharedPreferences.getInstance();
     try {
       //?lin=1&usu=" & TxtUsuario.Text.ToLowerCase().Trim()  &"&pass="& passEncriptada

@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'dart:developer';
+//import 'dart:developer';
+//import 'dart:html';
 import 'package:ferniinterna/Consulta.dart';
 import 'package:ferniinterna/Usuario.dart';
 import 'package:ferniinterna/util.dart';
@@ -929,7 +930,7 @@ class _PreciosState extends State<Precios> {
         await prefs.setString('login_user', resBody["CODIGO"]);
         codigoUsuario = resBody["CODIGO"];
         nombreUsuario = resBody["NOMBRE"];
-        textoAlerta = "♥‿♥ Hola " + resBody["NOMBRE"];
+        textoAlerta = "♥‿♥ Bienvenid@ " + resBody["NOMBRE"];
         txtUsuarioController.value =
             TextEditingValue(text: resBody["CODIGO"].toString().trim());
       } else {
@@ -937,7 +938,7 @@ class _PreciosState extends State<Precios> {
         await prefs.remove('login_user');
         codigoUsuario = "";
         nombreUsuario = "";
-        textoAlerta = "◔_◔... No encuentro tu usuario en el sistema.";
+        textoAlerta = "◔_◔... No encuentro tu ususario en el sistema.";
         txtUsuarioController.value = TextEditingValue(text: "");
       }
     } catch (error) {

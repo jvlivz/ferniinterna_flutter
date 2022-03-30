@@ -85,7 +85,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
       txtCodigoController.text = "";
       return;
     }
-    String urlBase = Util.urlBase();
+    String urlBase =  Util.urlBase();
 
     final response = await http
         .get(Uri.parse(urlBase + "verificadores/consulta.aspx?cod=" + codigo));
