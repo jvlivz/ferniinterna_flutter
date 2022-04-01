@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:ferniinterna/FerniOnline.dart';
 import 'package:ferniinterna/Inventario.dart';
 import 'package:ferniinterna/Login.dart';
 import 'package:ferniinterna/exhibiciones.dart';
@@ -16,7 +19,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    Util.verificarRed();
     return MaterialApp(
       title: 'Ferniplast',
       theme: ThemeData(
@@ -55,19 +57,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  StreamController<bool> _streamController = StreamController();
   final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
 
   @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    //debugPaintSizeEnabled = true;
+  void initState() {
+    super.initState();
 
+    if (!_streamController.hasListener)
+      _streamController.addStream(Stream.fromFuture(Util.verificarRed()));
+  }
+
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -105,15 +113,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 abrirFerniplastCom();
               },
             ),
-            if (Util.esAutorizado())
-              ListTile(
-                title: const Text('Descuento Empleados'),
-                leading: Icon(Icons.recent_actors),
-                onTap: () {
-                  // Update the state of the app.
-                  // ...
-                },
-              ),
+            ListTile(
+              title: const Text('Descuento Empleados'),
+              leading: Icon(Icons.recent_actors),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+              },
+            ),
             ListTile(
               title: const Text('Facebook grupo Ferni'),
               leading: Icon(Icons.groups),
@@ -173,9 +180,82 @@ class _MyHomePageState extends State<MyHomePage> {
             // center the children vertically; the main axis here is the vertical
             // axis because Columns are vertical (the cross axis would be
             // horizontal).
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              new Expanded(
+              StreamBuilder<bool>(
+                builder: (BuildContext context, snapShot) {
+                  if (!snapShot.hasError &&
+                      snapShot.hasData &&
+                      snapShot.data == true) {
+                    return Container(
+                        height: 270,
+                        child: GridView.count(
+                            // Create a grid with 2 columns. If you change the scrollDirection to
+                            // horizontal, this produces 2 rows.
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 8,
+                            crossAxisSpacing: 8,
+                            // Generate 100 widgets that display their index in the List.
+                            children: <Widget>[
+                              SquareButton(
+                                  texto: "Verificador",
+                                  icono: LineIcons.barcode,
+                                  colorIcono: Colors.green,
+                                  onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Verificador()),
+                                      )),
+                              SquareButton(
+                                  texto: "Imprimir precios",
+                                  icono: LineIcons.receipt,
+                                  colorIcono: Colors.lightBlue,
+                                  onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Precios()),
+                                      )),
+                              SquareButton(
+                                  texto: "Exhibiciones",
+                                  colorIcono: Colors.deepOrange,
+                                  icono: LineIcons.shapes,
+                                  onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Login()),
+                                      )),
+                              SquareButton(
+                                  texto: "FerniOnline",
+                                  colorIcono: Colors.indigo,
+                                  icono: LineIcons.shoppingCart,
+                                 onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => FerniOnline()),
+                                      )),
+                              SquareButton(
+                                  texto: "Inventario",
+                                  colorIcono: Colors.amber,
+                                  icono: LineIcons.checkSquare,
+                                  onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Inventario()),
+                                      )),
+                              SquareButton(
+                                  texto: "Mono",
+                                  colorIcono: Color.fromARGB(255, 47, 201, 9),
+                                  icono: LineIcons.book,
+                                  onPressed: () => abrirmono()),
+                            ]));
+                  } else
+                    return Container(height: 2, child: SizedBox.shrink());
+                },
+                stream: _streamController.stream,
+              ),
+              Container(
+                height: 400,
                 child: GridView.count(
                     // Create a grid with 2 columns. If you change the scrollDirection to
                     // horizontal, this produces 2 rows.
@@ -189,75 +269,21 @@ class _MyHomePageState extends State<MyHomePage> {
                           icono: LineIcons.tag,
                           colorIcono: Colors.deepPurple,
                           onPressed: () => abrirOfertas()),
-                      if (Util.esAutorizado())
-                        SquareButton(
-                            texto: "Verificador",
-                            icono: LineIcons.barcode,
-                            colorIcono: Colors.green,
-                            onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Verificador()),
-                                )),
-                      if (Util.esAutorizado())
-                        SquareButton(
-                            texto: "Imprimir precios",
-                            icono: LineIcons.receipt,
-                            colorIcono: Colors.lightBlue,
-                            onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Precios()),
-                                )),
-                      if (Util.esAutorizado())
-                        SquareButton(
-                            texto: "Exhibiciones",
-                            colorIcono: Colors.deepOrange,
-                            icono: LineIcons.shapes,
-                            onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Login()),
-                                )),
-                      if (Util.esAutorizado())
-                        SquareButton(
-                            texto: "FerniOnline",
-                            colorIcono: Colors.indigo,
-                            icono: LineIcons.shoppingCart,
-                            onPressed: () => print("Button Clicked!")),
-                      if (Util.esAutorizado())
-                        SquareButton(
-                            texto: "Inventario",
-                            colorIcono: Colors.amber,
-                            icono: LineIcons.checkSquare,
-                            onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Inventario()),
-                                )),
-                      if (Util.esAutorizado())
-                        SquareButton(
-                            texto: "Mono",
-                            colorIcono: Color.fromARGB(255, 47, 201, 9),
-                            icono: LineIcons.book,
-                            onPressed: () => abrirmono()),
                       SquareButton(
                           texto: "#ActitudFerni",
                           colorIcono: Color.fromARGB(255, 206, 63, 19),
                           icono: LineIcons.peopleCarry,
                           onPressed: () => abrirDDOO()),
-                      if (Util.esAutorizado())
-                        SquareButton(
-                            texto: "Intranet",
-                            colorIcono: Color.fromARGB(255, 19, 98, 202),
-                            icono: LineIcons.confluence,
-                            onPressed: () => abrirIntranet()),
-                      if (Util.esAutorizado())
-                        SquareButton(
-                            texto: "Novedades Mkt",
-                            colorIcono: Color.fromARGB(255, 219, 80, 16),
-                            icono: LineIcons.newspaper,
-                            onPressed: () => abrirMkt()),
+                      SquareButton(
+                          texto: "Intranet",
+                          colorIcono: Color.fromARGB(255, 19, 98, 202),
+                          icono: LineIcons.confluence,
+                          onPressed: () => abrirIntranet()),
+                      SquareButton(
+                          texto: "Novedades Mkt",
+                          colorIcono: Color.fromARGB(255, 219, 80, 16),
+                          icono: LineIcons.newspaper,
+                          onPressed: () => abrirMkt()),
                       SquareButton(
                           texto: "Facebook",
                           colorIcono: Color.fromARGB(255, 52, 118, 218),
@@ -274,7 +300,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           icono: LineIcons.video,
                           onPressed: () => abrirTiktok()),
                     ]),
-              )
+              ),
             ],
           ),
         ),
@@ -293,7 +319,7 @@ class _MyHomePageState extends State<MyHomePage> {
   verCatalogo() {}
 
   abrirOfertas() {
-    bool sucursalResult = Util.esSucursal();
+    bool sucursalResult = (Util.esSucursal.toString() == true);
 
     if (sucursalResult)
       Util.launchURL("https://www.ferniplast.com/nuestras-ofertas");
@@ -302,7 +328,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   abrirmono() {
-    bool sucursalResult = Util.esSucursal();
+    bool sucursalResult = (Util.esSucursal.toString() == true);
 
     if (sucursalResult) Util.launchURL("http://192.168.100.245/mono/");
   }

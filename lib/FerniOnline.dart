@@ -1,44 +1,41 @@
 import 'dart:convert';
 //import 'dart:developer';
-//import 'dart:html';
 import 'package:ferniinterna/Consulta.dart';
 import 'package:ferniinterna/Usuario.dart';
+//import 'package:ferniinterna/Usuario.dart';
 import 'package:ferniinterna/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_html/flutter_html.dart';
+//import 'package:flutter_html/flutter_html.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'DetailScreen.dart';
 
-class Precios extends StatefulWidget {
+class FerniOnline extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _PreciosState();
+    return _FerniOnlineState();
   }
 }
 
-class _PreciosState extends State<Precios> {
+class _FerniOnlineState extends State<FerniOnline> {
   final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
-  final txtCodigoController = TextEditingController();
+  final txtOrdenController = TextEditingController();
   final txtUsuarioController = TextEditingController();
   final txtCantController = TextEditingController();
   final txtPrecioController = TextEditingController();
+  final txtPackingListController = TextEditingController();
+  late FocusNode codigoFocus;
 
   Consulta datos = new Consulta();
 
   List<String> listaUltimos = [];
   String ultimos = "";
   List data = [];
-  List<DropdownMenuItem<String>> impresoras = [];
-  String _impresoraSeleccionada = "";
-  bool mostrarOfertaEspecial = false;
-  double precioEspecial = 0;
-  int cantidadEspecial = 0;
   String codigoUsuario = "";
   String nombreUsuario = "";
 
@@ -57,73 +54,45 @@ class _PreciosState extends State<Precios> {
     );
   }
 
-  Future<String> leerImpresoras() async {
-    String urlBase = Util.urlBase();
-    var res = await http
-        .get(Uri.parse(urlBase + "verificadores/consulta.aspx?cim=1"));
-
-    var resBody = json.decode(res.body);
-
-    setState(() {
-      data = resBody;
-      impresoras = data
-          .map((item) =>
-              DropdownMenuItem(child: Text(item), value: item.toString()))
-          .toList();
-
-      impresoras.insert(
-          0,
-          DropdownMenuItem(
-              child: Text("Sistema de Precios (ERP)"),
-              value: "Sistema de Precios (ERP)"));
-      _impresoraSeleccionada = "Sistema de Precios (ERP)";
-    });
-    print(resBody);
-
-    return "Sucess";
-  }
-
-  void leerBarra() async {
+  void leerBarraPackingList() async {
     String barcodeScanRes = "";
 
     barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-        '#FF0000', "Cancelar", true, ScanMode.BARCODE);
+        '#FF0000', "Cancelar", true, ScanMode.DEFAULT);
 
-    txtCodigoController.value = TextEditingValue(
+    barcodeScanRes = "05572106618224|23098";
+
+    if (barcodeScanRes.contains('|')) {
+      setState(() {
+        txtPackingListController.text = barcodeScanRes.split('|')[0];
+        txtOrdenController.text = barcodeScanRes.split('|')[1];
+      });
+    }
+    verificarPackingList(context);
+/*
+    txtPackingListController.value = TextEditingValue(
       text: barcodeScanRes,
       selection: TextSelection.fromPosition(
         TextPosition(offset: barcodeScanRes.length),
       ),
     );
-
-    //todo:sacar
-    txtCodigoController.text = barcodeScanRes;
-    leerDatos(barcodeScanRes);
-  }
-
-  void leerDatos(String codigo) async {
-    if (codigo.length == 0) return;
-
-    String urlBase = Util.urlBase();
-
-    final response = await http
-        .get(Uri.parse(urlBase + "verificadores/consulta.aspx?cod=" + codigo));
-    var parsedJson = json.decode(response.body);
-    print(response.body);
-
-    setState(() {
-      cantidadEspecial = 0;
-      precioEspecial = 0;
-      mostrarOfertaEspecial = false;
-      datos = Consulta.fromJson(parsedJson);
-    });
+    */
   }
 
   void initState() {
     super.initState();
+    codigoFocus = FocusNode();
     cargaUsuario();
-    leerImpresoras();
+
 //    WidgetsBinding.instance.addPostFrameCallback((_) => leerDatos());
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    codigoFocus.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -144,12 +113,12 @@ class _PreciosState extends State<Precios> {
             IconButton(
               icon: Icon(LineIcons.barcode),
               onPressed: () {
-                leerBarra();
+                leerBarraPackingList();
               },
             ),
           ],
           title: Text(
-            "Precios",
+            "FerniOnline",
             style: new TextStyle(fontFamily: "Gretoon"),
           ),
           backgroundColor: rojoFerni),
@@ -164,12 +133,12 @@ class _PreciosState extends State<Precios> {
                   children: <Widget>[
                     Row(children: [
                       Expanded(
-                        flex: 2,
+                        flex: 1,
                         child: TextField(
                           controller: txtUsuarioController,
                           autocorrect: false,
-                          autofocus: true,
                           enableSuggestions: false,
+                          textInputAction: TextInputAction.next,
                           maxLength: 4,
                           onChanged: (String str) {
                             setState(() {
@@ -192,57 +161,60 @@ class _PreciosState extends State<Precios> {
                       ),
                       Expanded(
                         flex: 4,
-                        child: DropdownButton(
-                          items: impresoras,
-                          value: _impresoraSeleccionada,
-                          onChanged: (newVal) {
+                        child: TextField(
+                          controller: txtPackingListController,
+                          autocorrect: false,
+                          autofocus: true,
+                          enableSuggestions: false,
+                          maxLines: 1,
+                          maxLength: 13,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.numberWithOptions(
+                              signed: false, decimal: false),
+                          decoration: InputDecoration(
+                              hintText: 'Packing List',
+                              counterStyle: TextStyle(
+                                height: double.minPositive,
+                              ),
+                              counterText: ""),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: TextField(
+                          controller: txtOrdenController,
+                          autocorrect: false,
+                          focusNode: codigoFocus,
+                          enableSuggestions: false,
+                          maxLength: 13,
+                          onSubmitted: (String str) {
                             setState(() {
-                              _impresoraSeleccionada = newVal.toString();
+                              verificarPackingList(context);
                             });
                           },
+                          keyboardType: TextInputType.numberWithOptions(
+                              signed: false, decimal: false),
+                          decoration: InputDecoration(
+                              hintText: 'N° Orden',
+                              counterStyle: TextStyle(
+                                height: double.minPositive,
+                              ),
+                              counterText: ""),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              verificarPackingList(context);
+                            });
+                          },
+                          icon: Icon(LineIcons.search,
+                              size: MediaQuery.of(context).size.width * .1),
                         ),
                       ),
                     ]),
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 5,
-                          child: TextField(
-                            controller: txtCodigoController,
-                            autocorrect: false,
-                            autofocus: true,
-                            enableSuggestions: false,
-                            maxLength: 13,
-                            onSubmitted: (String str) {
-                              setState(() {
-                                leerDatos(str);
-                              });
-                            },
-                            keyboardType: TextInputType.numberWithOptions(
-                                signed: false, decimal: false),
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: 'Ingrese código',
-                                counterStyle: TextStyle(
-                                  height: double.minPositive,
-                                ),
-                                counterText: ""),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                leerDatos(txtCodigoController.text);
-                              });
-                            },
-                            icon: Icon(LineIcons.search,
-                                size: MediaQuery.of(context).size.width * .1),
-                          ),
-                        ),
-                      ],
-                    ),
                     Padding(
                       padding: EdgeInsets.only(bottom: 5),
                       child: Container(
@@ -362,184 +334,56 @@ class _PreciosState extends State<Precios> {
                                   child: ListTile(
                                     contentPadding:
                                         EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                    title: Text("Tipo de etiqueta"),
+                                    title: Text("Cantidad a inventariar"),
                                     subtitle: Row(
                                       children: [
                                         Expanded(
-                                            flex: 2,
-                                            child: Column(children: [
-                                              Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 8, 4, 8),
-                                                child: TextButton.icon(
-                                                  style: TextButton.styleFrom(
-                                                      primary: Colors.red,
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      minimumSize:
-                                                          Size.fromHeight(50)),
-                                                  icon: Icon(Icons.money),
-                                                  label: Text("Oferta"),
-                                                  onPressed: () => setState(() {
-                                                    mostrarOfertaEspecial =
-                                                        true;
-                                                    txtPrecioController.value =
-                                                        TextEditingValue(
-                                                            text: "");
-                                                    txtCantController.value =
-                                                        TextEditingValue(
-                                                            text: "");
-                                                  }),
+                                            flex: 3,
+                                            child: TextField(
+                                              controller: txtCantController,
+                                              autocorrect: false,
+                                              autofocus: true,
+                                              enableSuggestions: false,
+                                              maxLength: 13,
+                                              inputFormatters: [
+                                                UpperCaseTextFormatter(),
+                                                LengthLimitingTextInputFormatter(
+                                                  13,
                                                 ),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 0, 4, 0),
-                                                child: TextButton.icon(
-                                                  style: TextButton.styleFrom(
-                                                      primary: Colors.blue,
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      minimumSize:
-                                                          Size.fromHeight(50)),
-                                                  icon: Icon(Icons.crop_5_4),
-                                                  label: Text("Normal"),
-                                                  onPressed: () =>
-                                                      imprimir(2, datos),
-                                                ),
-                                              ),
-                                            ])),
-                                        Expanded(
-                                            flex: 2,
-                                            child: Column(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      4, 8, 0, 8),
-                                                  child: TextButton.icon(
-                                                    style: TextButton.styleFrom(
-                                                        primary: Colors.indigo,
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        minimumSize:
-                                                            Size.fromHeight(
-                                                                50)),
-                                                    icon: Icon(
-                                                        Icons.crop_portrait),
-                                                    label: Text("Destacado"),
-                                                    onPressed: () =>
-                                                        imprimir(1, datos),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      4, 0, 0, 0),
-                                                  child: TextButton.icon(
-                                                    style: TextButton.styleFrom(
-                                                        primary: Colors.black,
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        minimumSize:
-                                                            Size.fromHeight(
-                                                                50)),
-                                                    icon: Icon(Icons.crop_7_5),
-                                                    label: Text("Perfu"),
-                                                    onPressed: () =>
-                                                        imprimir(3, datos),
-                                                  ),
-                                                )
                                               ],
-                                            ))
+                                              keyboardType: TextInputType
+                                                  .numberWithOptions(
+                                                      signed: true,
+                                                      decimal: false),
+                                              decoration: InputDecoration(
+                                                  border: OutlineInputBorder(),
+                                                  hintText: 'Cantidad',
+                                                  counterStyle: TextStyle(
+                                                    height: double.minPositive,
+                                                  ),
+                                                  counterText: ""),
+                                            )),
+                                        Expanded(
+                                          flex: 1,
+                                          child: TextButton.icon(
+                                              style: TextButton.styleFrom(
+                                                  primary: Colors.blue,
+                                                  backgroundColor: Colors.white,
+                                                  minimumSize:
+                                                      Size.fromHeight(50)),
+                                              icon: Icon(Icons.check),
+                                              label: Text(""),
+                                              onPressed: () => {
+                                                    inventariar(
+                                                        txtCantController.text,
+                                                        "",
+                                                        datos),
+                                                  }),
+                                        ),
                                       ],
                                     ),
                                   ),
                                 ),
-                              if (mostrarOfertaEspecial)
-                                Card(
-                                    color: Colors.white70,
-                                    child: ListTile(
-                                        contentPadding:
-                                            EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                        title: Text("Etiqueta Especial"),
-                                        subtitle: Row(
-                                          children: [
-                                            Expanded(
-                                              flex: 3,
-                                              child: TextField(
-                                                controller: txtCantController,
-                                                autocorrect: false,
-                                                autofocus: true,
-                                                enableSuggestions: false,
-                                                maxLength: 3,
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                decoration: InputDecoration(
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    hintText: 'Cantidad',
-                                                    counterStyle: TextStyle(
-                                                      height:
-                                                          double.minPositive,
-                                                    ),
-                                                    counterText: ""),
-                                              ),
-                                            ),
-                                            Text("x"),
-                                            Expanded(
-                                              flex: 3,
-                                              child: TextField(
-                                                controller: txtPrecioController,
-                                                autocorrect: false,
-                                                autofocus: true,
-                                                enableSuggestions: false,
-                                                maxLength: 9,
-                                                onSubmitted: (String str) {
-                                                  setState(() {
-                                                    imprimirEspecial(
-                                                        datos,
-                                                        txtCantController
-                                                            .value.text,
-                                                        txtPrecioController
-                                                            .value.text);
-                                                  });
-                                                },
-                                                keyboardType: TextInputType
-                                                    .numberWithOptions(
-                                                        signed: false,
-                                                        decimal: true),
-                                                decoration: InputDecoration(
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    hintText: 'Precio',
-                                                    counterStyle: TextStyle(
-                                                      height:
-                                                          double.minPositive,
-                                                    ),
-                                                    counterText: ""),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 1,
-                                              child: IconButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    imprimirEspecial(
-                                                        datos,
-                                                        txtCantController
-                                                            .value.text,
-                                                        txtPrecioController
-                                                            .value.text);
-                                                  });
-                                                },
-                                                icon: Icon(Icons.done,
-                                                    size: MediaQuery.of(context)
-                                                            .size
-                                                            .width *
-                                                        .1),
-                                              ),
-                                            ),
-                                          ],
-                                        ))),
                               if (datos.idArtic != "")
                                 Card(
                                   color: Colors.white70,
@@ -821,24 +665,8 @@ class _PreciosState extends State<Precios> {
                                     ),
                                   ),
                                 ),
-                              Card(
-                                child: ListTile(
-                                  contentPadding:
-                                      EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                  title: Text("Últimos precios realizados"),
-                                  subtitle: Text(
-                                    ultimos,
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                ),
-                              ),
                             ],
                           )),
-                    ),
-                    Text(
-                      "Actualizado " + (datos.fecha ?? ""),
-                      style: TextStyle(fontSize: 9),
-                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
@@ -850,48 +678,102 @@ class _PreciosState extends State<Precios> {
     );
   }
 
-  imprimir(int i, Consulta datos) async {
-    String textoAlerta = "";
+  void verificarPackingList(BuildContext context) async {
+    String packingList = txtPackingListController.text;
+    String orden = txtOrdenController.text;
 
+    if (packingList.length == 0 || orden.length == 0) {
+      SnackBar snackBar = SnackBar(
+        content: Text("◔_◔...datos no válidos..."),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    String urlBase = Util.urlBase();
+
+    final response = await http.get(
+        Uri.parse( "http://192.168.100.245/verificadores/verificadores/consulta.aspx?vpfv=1&usu=" + codigoUsuario +"&packing="+ packingList+"&nropedido=" +orden+"&ope="+codigoUsuario));
+
+     
+    var parsedJson = json.decode(response.body);
+    print(response.body);
+
+    setState(() {
+      datos = Consulta.fromJson(parsedJson);
+    });
+  }
+
+  inventariar(String cantidad, String ubicacion, Consulta datos) async {
+    String textoAlerta = "";
+/* 
     try {
+    //  if (!verificarCantidad(txtCantController.text, context) ||
+    //      !verificarUbicacion(txtUbicacionController.text, context)) return;
+
       if (codigoUsuario != "") {
-        String urlBase = Util.urlBase(esPrecios: true);
         final prefs = await SharedPreferences.getInstance();
 
-        String impresora = "";
+        FocusManager.instance.primaryFocus?.unfocus();
+        if (prefs.getString("login_user") != codigoUsuario) {
+          SnackBar snackBar = SnackBar(
+            content: Text("◔_◔...verificá tu usuario..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
 
-        if (_impresoraSeleccionada != "Sistema de Precios (ERP)")
-          impresora = "&imp=" +
-              _impresoraSeleccionada.replaceAll("Impresora Portatil #", "");
+        String idArtic = datos.idArtic.toString();
 
-        var res = await http.get(Uri.parse(urlBase +
-            "verificadores/consulta.aspx?prec=1&sku=" +
-            datos.idArtic.toString() +
+        setState(() {
+          txtCantController.text = "";
+          txtOrdenController.text = "";
+        });
+
+        String url = Util.urlBase(esPrecios: false) +
+            "verificadores/consulta.aspx?inv=1&sku=" +
+            idArtic +
             "&bar=" +
-            datos.idArtic.toString() +
+            idArtic +
             "&usu=" +
             codigoUsuario +
-            "&tetq=3&ope=" +
+            "&ope=" +
             codigoUsuario +
-            "&UO=" +
-            cantidadEspecial.toString() +
-            "&PO=" +
-            ((precioEspecial == 0) ? "0" : precioEspecial.toString()) +
-            impresora));
+            "&qty=" +
+            cantidad +
+            "&loc=" +
+            txtUbicacionController.text; 
 
-        var resBody = json.decode(res.body.replaceAll(":NULL", ":null"));
+        var res = await http.get(Uri.parse(url));
 
-        if (resBody["CODIGO"] != "") {
-          listaUltimos.insert(0, datos.descripcion.toString() + "\n");
+        var resBody =
+            json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
+
+        if (resBody["invetariook"] == true) {
+          listaUltimos.insert(
+              0, cantidad + " x " + datos.descripcion.toString() + "\n");
 
           if (listaUltimos.length > 10) listaUltimos.removeAt(10);
 
           setState(() {
+            txtCantController.text = "";
+            txtOrdenController.text = "";
+            datos.limpiar();
+            FocusManager.instance.primaryFocus?.unfocus();
+            codigoFocus.requestFocus();
+
             cantidadEspecial = 0;
             precioEspecial = 0;
             mostrarOfertaEspecial = false;
             ultimos = listaUltimos.join("\n");
           });
+
+        } else {
+          SnackBar snackBar = SnackBar(
+            content: Text("◔_◔...Hubo un problema: " +
+                resBody["mensaje"].toString() +
+                " ..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       } else {
         SnackBar snackBar = SnackBar(
@@ -902,7 +784,7 @@ class _PreciosState extends State<Precios> {
       }
     } catch (error) {
       textoAlerta =
-          "⊙﹏⊙... se produjo un error al enviar los datos de etiquetas.";
+          "⊙﹏⊙... se produjo un error al enviar los datos de FerniOnline.";
       txtUsuarioController.value = TextEditingValue(text: "");
     }
 // Find the ScaffoldMessenger in the widget tree
@@ -912,6 +794,7 @@ class _PreciosState extends State<Precios> {
       content: Text(textoAlerta),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    */
   }
 
   void buscaUsuario(String str, BuildContext contexto) async {
@@ -933,7 +816,7 @@ class _PreciosState extends State<Precios> {
         await prefs.setString('login_user', resBody["CODIGO"]);
         codigoUsuario = resBody["CODIGO"];
         nombreUsuario = resBody["NOMBRE"];
-        textoAlerta = "♥‿♥ Bienvenid@ " + resBody["NOMBRE"];
+        textoAlerta = "♥‿♥ Hola " + resBody["NOMBRE"];
         txtUsuarioController.value =
             TextEditingValue(text: resBody["CODIGO"].toString().trim());
       } else {
@@ -941,7 +824,7 @@ class _PreciosState extends State<Precios> {
         await prefs.remove('login_user');
         codigoUsuario = "";
         nombreUsuario = "";
-        textoAlerta = "◔_◔... No encuentro tu ususario en el sistema.";
+        textoAlerta = "◔_◔... No encuentro tu usuario en el sistema.";
         txtUsuarioController.value = TextEditingValue(text: "");
       }
     } catch (error) {
@@ -964,33 +847,6 @@ class _PreciosState extends State<Precios> {
       content: Text(textoAlerta),
     );
     ScaffoldMessenger.of(contexto).showSnackBar(snackBar);
-  }
-
-  void imprimirEspecial(Consulta datos, String cantidad, String precio) {
-    if (Util.isInteger(cantidad) &&
-        Util.isDouble(precio) &&
-        int.parse(cantidad) > 0 &&
-        int.parse(cantidad) < 1000 &&
-        double.parse(precio) > 0 &&
-        double.parse(precio) < 99999) {
-      setState(() {
-        precioEspecial = double.parse(
-            double.parse(precio.replaceAll(",", ".")).toStringAsFixed(2));
-        cantidadEspecial = int.parse(cantidad);
-      });
-
-      SnackBar snackBar = SnackBar(
-        content: Text(
-            "Ahora por favor seleccione el tamaño de etiqueta a imprimir:\n\nDestacado, normal o perfu..."),
-        duration: Duration(seconds: 5),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else {
-      SnackBar snackBar = SnackBar(
-        content: Text("Verifique los datos ingresados!"),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
   }
 }
 

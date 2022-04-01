@@ -143,7 +143,7 @@ class _InventarioState extends State<Inventario> {
       appBar: AppBar(
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.center_focus_weak),
+              icon: Icon(LineIcons.barcode),
               onPressed: () {
                 leerBarra();
               },
@@ -411,7 +411,7 @@ class _InventarioState extends State<Inventario> {
                                               ],
                                               keyboardType: TextInputType
                                                   .numberWithOptions(
-                                                      signed: false,
+                                                      signed: true,
                                                       decimal: false),
                                               decoration: InputDecoration(
                                                   border: OutlineInputBorder(),
@@ -800,11 +800,18 @@ class _InventarioState extends State<Inventario> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
 
+        String idArtic = datos.idArtic.toString();
+
+        setState(() {
+          txtCantController.text = "";
+          txtCodigoController.text = "";
+        });
+
         String url = Util.urlBase(esPrecios: false) +
             "verificadores/consulta.aspx?inv=1&sku=" +
-            datos.idArtic.toString() +
+            idArtic +
             "&bar=" +
-            datos.idArtic.toString() +
+            idArtic +
             "&usu=" +
             codigoUsuario +
             "&ope=" +
@@ -821,13 +828,7 @@ class _InventarioState extends State<Inventario> {
 
         if (resBody["invetariook"] == true) {
           listaUltimos.insert(
-              0,
-              cantidad +
-                  " x " +
-                  datos.idArtic.toString() +
-                  " " +
-                  datos.descripcion.toString() +
-                  "\n");
+              0, cantidad + " x " + datos.descripcion.toString() + "\n");
 
           if (listaUltimos.length > 10) listaUltimos.removeAt(10);
 

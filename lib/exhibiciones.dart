@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:ferniinterna/Consulta.dart';
 import 'package:ferniinterna/Usuario.dart';
 import 'package:ferniinterna/alertDialog_widget.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -149,7 +147,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
       appBar: AppBar(
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.center_focus_weak),
+              icon: Icon(LineIcons.barcode),
               onPressed: () {
                 leerBarra(usuario);
               },
@@ -204,7 +202,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
                                 leerDatos(txtCodigoController.text, usuario);
                               });
                             },
-                            icon: Icon(Icons.search,
+                            icon: Icon(LineIcons.search,
                                 size: MediaQuery.of(context).size.width * .1),
                           ),
                         ),

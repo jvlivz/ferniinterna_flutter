@@ -3,59 +3,86 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Util {
   static String? wifiName = "";
   static String? wifiIP = "";
+  static bool? esAutorizado;
+  static bool? esSucursal;
 
-  static void verificarRed() async {
+  static Future<bool> verificarRed() async {
     wifiName = "N/A";
     wifiIP = "0.0.0.0";
-     try {
+    try {
       var connectivityResult = await Connectivity().checkConnectivity();
 
       if (connectivityResult == ConnectivityResult.wifi) {
         // I am connected to a wifi network.
-        print('connected');
-        final info = NetworkInfo();
 
-        wifiName = await info.getWifiName(); // FooNetwork
-        wifiIP = await info.getWifiIP();
+        var status = await Permission.location.status;
+        if (status.isDenied) {
+          await Permission.location.request();
+        }
+
+// You can can also directly ask the permission about its status.
+        if (await Permission.location.isGranted) {
+          // The OS restricts access, for example because of parental controls.
+          final info = NetworkInfo();
+
+          wifiName = await info.getWifiName(); // FooNetwork
+          wifiIP = await info.getWifiIP();
+          String currentIp = obtenerIpSucursal();
+          if (currentIp != "0.0.0.0") return true;
+        }
       }
     } catch (e) {
       print(e);
-    } 
+    }
+    return false;
   }
 
   static String obtenerIpSucursal({bool esPrecios = false}) {
-    var ip = "192.168.3.253";
-    if (esPrecios) ip = "192.168.3.204";
+    var ip = "0.0.0.0";
+    //if (esPrecios) ip = "192.168.3.204";
 
     if (wifiIP != null &&
         wifiName != null &&
         wifiName.toString().toLowerCase() == "reyes") {
-      if (wifiIP.toString().startsWith("192.168.1.")) ip = "192.168.1.253";
-      if (wifiIP.toString().startsWith("192.168.2.")) ip = "192.168.2.253";
-      if (wifiIP.toString().startsWith("192.168.3.")) ip = "192.168.3.253";
-      if (wifiIP.toString().startsWith("192.168.4.")) ip = "192.168.4.253";
-      if (wifiIP.toString().startsWith("192.168.5.")) ip = "192.168.5.253";
-      if (wifiIP.toString().startsWith("192.168.6.")) ip = "192.168.6.253";
-      if (wifiIP.toString().startsWith("192.168.107.")) ip = "192.168.107.253";
-      if ((wifiIP.toString().startsWith("192.168.80.") ||
-          wifiIP.toString().startsWith("192.168.83."))) ip = "192.168.80.253";
-      if ((wifiIP.toString().startsWith("192.168.90.") ||
-          wifiIP.toString().startsWith("192.168.91.") ||
-          wifiIP.toString().startsWith("192.168.92.") ||
-          wifiIP.toString().startsWith("192.168.93.") ||
-          wifiIP.toString().startsWith("192.168.94.") ||
-          wifiIP.toString().startsWith("192.168.95.") ||
-          wifiIP.toString().startsWith("192.168.96."))) ip = "192.168.90.253";
-      if ((wifiIP.toString().startsWith("192.168.100.") ||
-          wifiIP.toString().startsWith("192.168.9.") ||
-          wifiIP.toString().startsWith("192.168.14."))) ip = "192.168.9.245";
-      if (wifiIP.toString().startsWith("192.168.7.")) ip = "192.168.100.245";
+      String currentIp = wifiIP.toString().split('.')[2];
+      print(currentIp);
+
+      if (currentIp == "1" || currentIp == "141") ip = "192.168.1.253";
+      if (currentIp == "2" || currentIp == "142") ip = "192.168.2.253";
+      if (currentIp == "3" || currentIp == "143") ip = "192.168.3.253";
+      if (currentIp == "4" || currentIp == "144") ip = "192.168.4.253";
+      if (currentIp == "5") ip = "192.168.5.253";
+      if (currentIp == "6" || currentIp == "6") ip = "192.168.6.253";
+      if (currentIp == "107" || currentIp == "147") ip = "192.168.107.253";
+      if (currentIp == "80" || currentIp == "83") ip = "192.168.80.253";
+      if (currentIp == "90" ||
+          currentIp == "91" ||
+          currentIp == "92" ||
+          currentIp == "93" ||
+          currentIp == "94" ||
+          currentIp == "95" ||
+          currentIp == "96") ip = "192.168.90.253";
+      if (currentIp == "10" || currentIp == "9" || currentIp == "14")
+        ip = "192.168.9.245";
+      if (currentIp == "7") ip = "192.168.100.245";
     }
 
+    if (ip != "0.0.0.0") esAutorizado = true;
+    if (ip != "192.168.9.245")
+      esSucursal = true;
+    else
+      esSucursal = true;
+
+    print(esAutorizado);
+    print(esSucursal);
+    print(wifiName);
+    print(wifiIP);
+    print(ip);
     return ip;
   }
 
@@ -75,18 +102,6 @@ class Util {
     if (ip.startsWith("192.168.90.")) return "F9";
 
     return "";
-  }
-
-  static bool esAutorizado() {
-    return false;
-  }
-
-  static bool esSucursal({bool esPrecios = false}) {
-    String ipSucursalResult = Util.obtenerIpSucursal(esPrecios: esPrecios);
-
-    if (ipSucursalResult != "192.168.9.245") return true;
-
-    return false;
   }
 
   static String urlBase({bool esPrecios = false}) {

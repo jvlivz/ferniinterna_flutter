@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:line_icons/line_icons.dart';
 
 import 'DetailScreen.dart';
 
@@ -42,6 +43,8 @@ class _VerificadorState extends State<Verificador> {
   }
 
   void leerDatos(String codigo) async {
+    if (codigo.length == 0) return;
+
     String urlBase = Util.urlBase();
 
     final response = await http
@@ -76,7 +79,7 @@ class _VerificadorState extends State<Verificador> {
       appBar: AppBar(
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.center_focus_weak),
+              icon: Icon(LineIcons.barcode),
               onPressed: () {
                 leerBarra();
               },
@@ -130,7 +133,7 @@ class _VerificadorState extends State<Verificador> {
                                 leerDatos(txtCodigoController.text);
                               });
                             },
-                            icon: Icon(Icons.search,
+                            icon: Icon(LineIcons.search,
                                 size: MediaQuery.of(context).size.width * .1),
                           ),
                         ),
