@@ -57,7 +57,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  StreamController<bool> _streamController = StreamController();
+  StreamController<bool> _streamController = new StreamController.broadcast();
   final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
 
   @override
@@ -164,146 +164,125 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Padding(
-          padding: new EdgeInsets.all(8.0),
-          child: Column(
-            // Column is also a layout widget. It takes a list of children and
-            // arranges them vertically. By default, it sizes itself to fit its
-            // children horizontally, and tries to be as tall as its parent.
-            //
-            // Invoke "debug painting" (press "p" in the console, choose the
-            // "Toggle Debug Paint" action from the Flutter Inspector in Android
-            // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-            // to see the wireframe for each widget.
-            //
-            // Column has various properties to control how it sizes itself and
-            // how it positions its children. Here we use mainAxisAlignment to
-            // center the children vertically; the main axis here is the vertical
-            // axis because Columns are vertical (the cross axis would be
-            // horizontal).
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              StreamBuilder<bool>(
-                builder: (BuildContext context, snapShot) {
-                  if (!snapShot.hasError &&
-                      snapShot.hasData &&
-                      snapShot.data == true) {
-                    return Container(
-                        height: 270,
-                        child: GridView.count(
-                            // Create a grid with 2 columns. If you change the scrollDirection to
-                            // horizontal, this produces 2 rows.
-                            crossAxisCount: 3,
-                            mainAxisSpacing: 8,
-                            crossAxisSpacing: 8,
-                            // Generate 100 widgets that display their index in the List.
-                            children: <Widget>[
-                              SquareButton(
-                                  texto: "Verificador",
-                                  icono: LineIcons.barcode,
-                                  colorIcono: Colors.green,
-                                  onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                Verificador()),
-                                      )),
-                              SquareButton(
-                                  texto: "Imprimir precios",
-                                  icono: LineIcons.receipt,
-                                  colorIcono: Colors.lightBlue,
-                                  onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Precios()),
-                                      )),
-                              SquareButton(
-                                  texto: "Exhibiciones",
-                                  colorIcono: Colors.deepOrange,
-                                  icono: LineIcons.shapes,
-                                  onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Login()),
-                                      )),
-                              SquareButton(
-                                  texto: "FerniOnline",
-                                  colorIcono: Colors.indigo,
-                                  icono: LineIcons.shoppingCart,
-                                 onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => FerniOnline()),
-                                      )),
-                              SquareButton(
-                                  texto: "Inventario",
-                                  colorIcono: Colors.amber,
-                                  icono: LineIcons.checkSquare,
-                                  onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Inventario()),
-                                      )),
-                              SquareButton(
-                                  texto: "Mono",
-                                  colorIcono: Color.fromARGB(255, 47, 201, 9),
-                                  icono: LineIcons.book,
-                                  onPressed: () => abrirmono()),
-                            ]));
-                  } else
-                    return Container(height: 2, child: SizedBox.shrink());
-                },
-                stream: _streamController.stream,
-              ),
-              Container(
-                height: 400,
-                child: GridView.count(
-                    // Create a grid with 2 columns. If you change the scrollDirection to
-                    // horizontal, this produces 2 rows.
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                    // Generate 100 widgets that display their index in the List.
-                    children: <Widget>[
-                      SquareButton(
-                          texto: "Catálogo de ofertas",
-                          icono: LineIcons.tag,
-                          colorIcono: Colors.deepPurple,
-                          onPressed: () => abrirOfertas()),
-                      SquareButton(
-                          texto: "#ActitudFerni",
-                          colorIcono: Color.fromARGB(255, 206, 63, 19),
-                          icono: LineIcons.peopleCarry,
-                          onPressed: () => abrirDDOO()),
-                      SquareButton(
-                          texto: "Intranet",
-                          colorIcono: Color.fromARGB(255, 19, 98, 202),
-                          icono: LineIcons.confluence,
-                          onPressed: () => abrirIntranet()),
-                      SquareButton(
-                          texto: "Novedades Mkt",
-                          colorIcono: Color.fromARGB(255, 219, 80, 16),
-                          icono: LineIcons.newspaper,
-                          onPressed: () => abrirMkt()),
-                      SquareButton(
-                          texto: "Facebook",
-                          colorIcono: Color.fromARGB(255, 52, 118, 218),
-                          icono: LineIcons.facebook,
-                          onPressed: () => abrirFacebook()),
-                      SquareButton(
-                          texto: "Instagram",
-                          colorIcono: Color.fromARGB(255, 218, 52, 163),
-                          icono: LineIcons.instagram,
-                          onPressed: () => abrirInstagram()),
-                      SquareButton(
-                          texto: "TikTok",
-                          colorIcono: Color.fromARGB(255, 52, 218, 80),
-                          icono: LineIcons.video,
-                          onPressed: () => abrirTiktok()),
-                    ]),
-              ),
-            ],
-          ),
-        ),
+            padding: new EdgeInsets.all(0.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Wrap(
+                  spacing: 0.0, // gap between adjacent chips
+                  runSpacing: 4.0, // gap between lines
+                  children: <Widget>[
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: true,
+                        texto: "Verificador",
+                        icono: LineIcons.barcode,
+                        colorIcono: Colors.green,
+                        onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Verificador()),
+                            )),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: true,
+                        texto: "Imprimir precios",
+                        icono: LineIcons.receipt,
+                        colorIcono: Colors.lightBlue,
+                        onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Precios()),
+                            )),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: true,
+                        texto: "Exhibiciones",
+                        colorIcono: Colors.deepOrange,
+                        icono: LineIcons.shapes,
+                        onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Login()),
+                            )),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: true,
+                        texto: "FerniOnline",
+                        colorIcono: Colors.indigo,
+                        icono: LineIcons.shoppingCart,
+                        onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => FerniOnline()),
+                            )),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: true,
+                        texto: "Inventario",
+                        colorIcono: Colors.amber,
+                        icono: LineIcons.checkSquare,
+                        onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Inventario()),
+                            )),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: true,
+                        texto: "Mono",
+                        colorIcono: Color.fromARGB(255, 47, 201, 9),
+                        icono: LineIcons.book,
+                        onPressed: () => abrirmono()),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: false,
+                        texto: "Catálogo de ofertas",
+                        icono: LineIcons.tag,
+                        colorIcono: Colors.deepPurple,
+                        onPressed: () => abrirOfertas()),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: false,
+                        texto: "#ActitudFerni",
+                        colorIcono: Color.fromARGB(255, 206, 63, 19),
+                        icono: LineIcons.peopleCarry,
+                        onPressed: () => abrirDDOO()),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: false,
+                        texto: "Intranet",
+                        colorIcono: Color.fromARGB(255, 19, 98, 202),
+                        icono: LineIcons.confluence,
+                        onPressed: () => abrirIntranet()),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: false,
+                        texto: "Novedades Mkt",
+                        colorIcono: Color.fromARGB(255, 219, 80, 16),
+                        icono: LineIcons.newspaper,
+                        onPressed: () => abrirMkt()),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: false,
+                        texto: "Facebook",
+                        colorIcono: Color.fromARGB(255, 52, 118, 218),
+                        icono: LineIcons.facebook,
+                        onPressed: () => abrirFacebook()),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: false,
+                        texto: "Instagram",
+                        colorIcono: Color.fromARGB(255, 218, 52, 163),
+                        icono: LineIcons.instagram,
+                        onPressed: () => abrirInstagram()),
+                    SquareButton(
+                        controller: _streamController,
+                        soloFerni: false,
+                        texto: "TikTok",
+                        colorIcono: Color.fromARGB(255, 52, 218, 80),
+                        icono: LineIcons.video,
+                        onPressed: () => abrirTiktok()),
+                  ]),
+            )),
       ),
       //   floatingActionButton: FloatingActionButton(
       //     onPressed: (() => Navigator.push(
@@ -376,50 +355,68 @@ class SquareButton extends StatelessWidget {
       required this.texto,
       required this.icono,
       required this.colorIcono,
-      required this.onPressed})
+      required this.onPressed,
+      required this.soloFerni,
+      required this.controller})
       : super(key: key);
 
+  final dynamic controller;
   final String texto;
   final IconData icono;
   final VoidCallback onPressed;
   final Color colorIcono;
+  final bool soloFerni;
 
   @override
   Widget build(BuildContext context) {
     final Color rojoFerni = Color.fromARGB(255, 32, 32, 32);
 
-    return Material(
-        borderRadius: BorderRadius.circular(7.0),
-        elevation: 2,
-        shadowColor: Color.fromARGB(255, 228, 228, 228),
-        child: Container(
-            height: 45,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(
-                Radius.circular(25.0),
-              ),
-            ),
-            child: TextButton(
-              onPressed: onPressed,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                        child: Icon(
-                      icono,
-                      size: MediaQuery.of(context).size.width * .15,
-                      color: colorIcono,
-                    )),
-                    Center(
-                        child: Text(
-                      texto,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width * .025,
-                          color: Colors.grey[700]),
-                    ))
-                  ]),
-            )));
+    return StreamBuilder<bool>(
+      builder: (BuildContext context, snapShot) {
+        if (!soloFerni ||
+            (!snapShot.hasError && snapShot.hasData && snapShot.data == true)) {
+          return Padding(
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width * .008),
+              child: Material(
+                  borderRadius: BorderRadius.circular(7.0),
+                  elevation: 2,
+                  shadowColor: Color.fromARGB(255, 228, 228, 228),
+                  child: Container(
+                      height: MediaQuery.of(context).size.width * .3,
+                      width: MediaQuery.of(context).size.width * .3,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(25.0),
+                        ),
+                      ),
+                      child: TextButton(
+                        onPressed: onPressed,
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                  child: Icon(
+                                icono,
+                                size: MediaQuery.of(context).size.width * .15,
+                                color: colorIcono,
+                              )),
+                              Center(
+                                  child: Text(
+                                texto,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            .025,
+                                    color: Colors.grey[700]),
+                              ))
+                            ]),
+                      ))));
+        } else
+          return SizedBox.shrink();
+      },
+      stream: controller.stream,
+    );
   }
 }

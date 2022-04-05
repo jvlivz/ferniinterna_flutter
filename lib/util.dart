@@ -46,11 +46,15 @@ class Util {
     var ip = "0.0.0.0";
     //if (esPrecios) ip = "192.168.3.204";
 
+if (wifiIP.toString() == "192.168.232.2")  ip = "192.168.3.253";
+
     if (wifiIP != null &&
         wifiName != null &&
         wifiName.toString().toLowerCase() == "reyes") {
       String currentIp = wifiIP.toString().split('.')[2];
       print(currentIp);
+
+      
 
       if (currentIp == "1" || currentIp == "141") ip = "192.168.1.253";
       if (currentIp == "2" || currentIp == "142") ip = "192.168.2.253";
