@@ -469,7 +469,9 @@ class _FerniOnlineState extends State<FerniOnline> {
                                                 icon: Icon(LineIcons.undo),
                                                 label: Text("Retorno a CD"),
                                                 onPressed: () =>
-                                                    setState(() {}),
+                                                    setState(() {
+                                                      retornoCD(datos);
+                                                    }),
                                               ),
                                             ),
                                         ],
@@ -517,6 +519,80 @@ class _FerniOnlineState extends State<FerniOnline> {
     setState(() {
       datos = SeguimientoFO.fromJson(parsedJson);
     });
+  }
+
+
+retornoCD(SeguimientoFO datos) async {
+    String textoAlerta = "";
+
+    try {
+      if (codigoUsuario != "") {
+        final prefs = await SharedPreferences.getInstance();
+
+        FocusManager.instance.primaryFocus?.unfocus();
+        if (prefs.getString("login_user") != codigoUsuario) {
+          SnackBar snackBar = SnackBar(
+            content: Text("◔_◔...verificá tu usuario..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+
+        String url = "http://192.168.100.245/" +
+            "verificadores/consulta.aspx?rcfv=1&usu=" +
+            codigoUsuario.trim() +
+            " " +
+            prefs.getString("login_name").toString() +
+            "&packing=" +
+            datos.nroPrecin.toString() +
+            "&nropedido=" +
+            datos.nroPedido.toString() +
+            "&ope=" +
+            codigoUsuario;
+
+        var res = await http.get(Uri.parse(url));
+
+        var resBody =
+            json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
+
+        if (resBody["consultaok"] == true) {
+          setState(() {
+            txtPackingListController.text = "";
+            txtOrdenController.text = "";
+            datos.limpiar();
+            FocusManager.instance.primaryFocus?.unfocus();
+            packingFocus.requestFocus();
+          });
+          SnackBar snackBar = SnackBar(
+            content: Text("Registro existoso ..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else {
+          SnackBar snackBar = SnackBar(
+            content: Text("◔_◔...Hubo un problema: " +
+                resBody["mensaje"].toString() +
+                " ..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      } else {
+        SnackBar snackBar = SnackBar(
+          content: Text(
+              "◔_◔...No me dijiste quien sos, completá tu usuario por favor..."),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } catch (error) {
+      textoAlerta =
+          "⊙﹏⊙... se produjo un error al enviar los datos de FerniOnline.";
+      txtUsuarioController.value = TextEditingValue(text: "");
+    }
+// Find the ScaffoldMessenger in the widget tree
+// and use it to show a SnackBar.
+
+    SnackBar snackBar = SnackBar(
+      content: Text(textoAlerta),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   llegoDeposito(SeguimientoFO datos) async {
