@@ -161,129 +161,131 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Padding(
-            padding: new EdgeInsets.all(0.0),
-            child: SingleChildScrollView(
+          child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
-              child: Wrap(
-                  spacing: 0.0, // gap between adjacent chips
-                  runSpacing: 4.0, // gap between lines
-                  children: <Widget>[
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: true,
-                        texto: "Verificador",
-                        icono: LineIcons.barcode,
-                        colorIcono: Colors.green,
-                        onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Verificador()),
-                            )),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: true,
-                        texto: "Imprimir precios",
-                        icono: LineIcons.receipt,
-                        colorIcono: Colors.lightBlue,
-                        onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Precios()),
-                            )),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: true,
-                        texto: "Exhibiciones",
-                        colorIcono: Colors.deepOrange,
-                        icono: LineIcons.shapes,
-                        onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Login()),
-                            )),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: true,
-                        texto: "FerniOnline",
-                        colorIcono: Colors.indigo,
-                        icono: LineIcons.shoppingCart,
-                        onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => FerniOnline()),
-                            )),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: true,
-                        texto: "Inventario",
-                        colorIcono: Colors.amber,
-                        icono: LineIcons.checkSquare,
-                        onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Inventario()),
-                            )),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: true,
-                        texto: "Mono",
-                        colorIcono: Color.fromARGB(255, 47, 201, 9),
-                        icono: LineIcons.book,
-                        onPressed: () => abrirmono()),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: false,
-                        texto: "Catálogo de ofertas",
-                        icono: LineIcons.tag,
-                        colorIcono: Colors.deepPurple,
-                        onPressed: () => abrirOfertas()),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: false,
-                        texto: "#ActitudFerni",
-                        colorIcono: Color.fromARGB(255, 206, 63, 19),
-                        icono: LineIcons.peopleCarry,
-                        onPressed: () => abrirDDOO()),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: false,
-                        texto: "Intranet",
-                        colorIcono: Color.fromARGB(255, 19, 98, 202),
-                        icono: LineIcons.confluence,
-                        onPressed: () => abrirIntranet()),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: false,
-                        texto: "Novedades Mkt",
-                        colorIcono: Color.fromARGB(255, 219, 80, 16),
-                        icono: LineIcons.newspaper,
-                        onPressed: () => abrirMkt()),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: false,
-                        texto: "Facebook",
-                        colorIcono: Color.fromARGB(255, 52, 118, 218),
-                        icono: LineIcons.facebook,
-                        onPressed: () => abrirFacebook()),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: false,
-                        texto: "Instagram",
-                        colorIcono: Color.fromARGB(255, 218, 52, 163),
-                        icono: LineIcons.instagram,
-                        onPressed: () => abrirInstagram()),
-                    SquareButton(
-                        controller: _streamController,
-                        soloFerni: false,
-                        texto: "TikTok",
-                        colorIcono: Color.fromARGB(255, 52, 218, 80),
-                        icono: LineIcons.video,
-                        onPressed: () => abrirTiktok()),
-                  ]),
-            )),
-      ),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min ,
+                  children: [
+                    Wrap(
+                        spacing: 0.0, // gap between adjacent chips
+                        runSpacing: 4.0, // gap between lines
+                        children: <Widget>[
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: true,
+                              texto: "Verificador",
+                              icono: LineIcons.barcode,
+                              colorIcono: Colors.green,
+                              onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Verificador()),
+                                  )),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: true,
+                              texto: "Imprimir precios",
+                              icono: LineIcons.receipt,
+                              colorIcono: Colors.lightBlue,
+                              onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Precios()),
+                                  )),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: true,
+                              texto: "Exhibiciones",
+                              colorIcono: Colors.deepOrange,
+                              icono: LineIcons.shapes,
+                              onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Login()),
+                                  )),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: true,
+                              texto: "FerniOnline",
+                              colorIcono: Colors.indigo,
+                              icono: LineIcons.shoppingCart,
+                              onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => FerniOnline()),
+                                  )),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: true,
+                              texto: "Inventario",
+                              colorIcono: Colors.amber,
+                              icono: LineIcons.checkSquare,
+                              onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Inventario()),
+                                  )),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: true,
+                              texto: "Mono",
+                              colorIcono: Color.fromARGB(255, 47, 201, 9),
+                              icono: LineIcons.book,
+                              onPressed: () => abrirmono()),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: false,
+                              texto: "Catálogo de ofertas",
+                              icono: LineIcons.tag,
+                              colorIcono: Colors.deepPurple,
+                              onPressed: () => abrirOfertas()),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: false,
+                              texto: "#ActitudFerni",
+                              colorIcono: Color.fromARGB(255, 206, 63, 19),
+                              icono: LineIcons.peopleCarry,
+                              onPressed: () => abrirDDOO()),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: false,
+                              texto: "Intranet",
+                              colorIcono: Color.fromARGB(255, 19, 98, 202),
+                              icono: LineIcons.confluence,
+                              onPressed: () => abrirIntranet()),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: false,
+                              texto: "Novedades Mkt",
+                              colorIcono: Color.fromARGB(255, 219, 80, 16),
+                              icono: LineIcons.newspaper,
+                              onPressed: () => abrirMkt()),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: false,
+                              texto: "Facebook",
+                              colorIcono: Color.fromARGB(255, 52, 118, 218),
+                              icono: LineIcons.facebook,
+                              onPressed: () => abrirFacebook()),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: false,
+                              texto: "Instagram",
+                              colorIcono: Color.fromARGB(255, 218, 52, 163),
+                              icono: LineIcons.instagram,
+                              onPressed: () => abrirInstagram()),
+                          SquareButton(
+                              controller: _streamController,
+                              soloFerni: false,
+                              texto: "TikTok",
+                              colorIcono: Color.fromARGB(255, 52, 218, 80),
+                              icono: LineIcons.video,
+                              onPressed: () => abrirTiktok()),
+                        ]),
+                  ]))),
+
       //   floatingActionButton: FloatingActionButton(
       //     onPressed: (() => Navigator.push(
       //           context,
@@ -298,7 +300,7 @@ class _MyHomePageState extends State<MyHomePage> {
   verCatalogo() {}
 
   abrirOfertas() {
-    bool sucursalResult = (Util.esSucursal.toString() == true);
+    bool sucursalResult = (Util.esSucursal  == true);
 
     if (sucursalResult)
       Util.launchURL("https://www.ferniplast.com/nuestras-ofertas");
@@ -307,7 +309,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   abrirmono() {
-    bool sucursalResult = (Util.esSucursal.toString() == true);
+    bool sucursalResult = (Util.esSucursal  == true);
 
     if (sucursalResult) Util.launchURL("http://192.168.100.245/mono/");
   }

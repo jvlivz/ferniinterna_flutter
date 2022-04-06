@@ -46,7 +46,7 @@ class Util {
     var ip = "0.0.0.0";
     //if (esPrecios) ip = "192.168.3.204";
 
-if (wifiIP.toString() == "192.168.232.2")  ip = "192.168.3.253";
+  ip = "192.168.3.253";
 
     if (wifiIP != null &&
         wifiName != null &&
@@ -147,4 +147,9 @@ class UpperCaseTextFormatter extends TextInputFormatter {
       selection: newValue.selection,
     );
   }
+}
+
+extension StringCasingExtension on String {
+  String toCapitalized() => length > 0 ?'${this[0].toUpperCase()}${substring(1).toLowerCase()}':'';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
 }

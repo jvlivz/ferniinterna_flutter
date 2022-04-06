@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:intl/intl.dart';
 //import 'dart:developer';
 import 'package:ferniinterna/Consulta.dart';
+import 'package:ferniinterna/SeguimientoFO.dart';
 import 'package:ferniinterna/Usuario.dart';
 //import 'package:ferniinterna/Usuario.dart';
 import 'package:ferniinterna/util.dart';
@@ -26,18 +28,16 @@ class _FerniOnlineState extends State<FerniOnline> {
   final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
   final txtOrdenController = TextEditingController();
   final txtUsuarioController = TextEditingController();
-  final txtCantController = TextEditingController();
-  final txtPrecioController = TextEditingController();
   final txtPackingListController = TextEditingController();
   late FocusNode codigoFocus;
+  late FocusNode packingFocus;
 
-  Consulta datos = new Consulta();
+  SeguimientoFO datos = new SeguimientoFO();
 
-  List<String> listaUltimos = [];
-  String ultimos = "";
   List data = [];
   String codigoUsuario = "";
   String nombreUsuario = "";
+  String CompraAdicional = "0";
 
   void cargaUsuario() async {
     // Obtain shared preferences.
@@ -82,6 +82,7 @@ class _FerniOnlineState extends State<FerniOnline> {
   void initState() {
     super.initState();
     codigoFocus = FocusNode();
+    packingFocus = FocusNode();
     cargaUsuario();
 
 //    WidgetsBinding.instance.addPostFrameCallback((_) => leerDatos());
@@ -91,7 +92,7 @@ class _FerniOnlineState extends State<FerniOnline> {
   void dispose() {
     // Clean up the focus node when the Form is disposed.
     codigoFocus.dispose();
-
+    packingFocus.dispose();
     super.dispose();
   }
 
@@ -133,7 +134,7 @@ class _FerniOnlineState extends State<FerniOnline> {
                   children: <Widget>[
                     Row(children: [
                       Expanded(
-                        flex: 1,
+                        flex: 2,
                         child: TextField(
                           controller: txtUsuarioController,
                           autocorrect: false,
@@ -166,8 +167,9 @@ class _FerniOnlineState extends State<FerniOnline> {
                           autocorrect: false,
                           autofocus: true,
                           enableSuggestions: false,
+                          focusNode: packingFocus,
                           maxLines: 1,
-                          maxLength: 13,
+                          maxLength: 14,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.numberWithOptions(
                               signed: false, decimal: false),
@@ -180,7 +182,7 @@ class _FerniOnlineState extends State<FerniOnline> {
                         ),
                       ),
                       Expanded(
-                        flex: 3,
+                        flex: 2,
                         child: TextField(
                           controller: txtOrdenController,
                           autocorrect: false,
@@ -216,12 +218,30 @@ class _FerniOnlineState extends State<FerniOnline> {
                       ),
                     ]),
                     Padding(
-                      padding: EdgeInsets.only(bottom: 5),
-                      child: Container(
-                          width: double.infinity,
-                          child: Column(
-                            children: [
-                              if (datos.error != "")
+                        padding: EdgeInsets.only(bottom: 5),
+                        child: Container(
+                            width: double.infinity,
+                            child: Column(children: [
+                              if (datos.codigo == null &&
+                                  datos.consultaok &&
+                                  txtOrdenController.text.length > 0 &&
+                                  txtPackingListController.text.length > 0)
+                                Card(
+                                  color: Colors.orange,
+                                  child: ListTile(
+                                      contentPadding:
+                                          EdgeInsets.fromLTRB(15, 10, 25, 0),
+                                      title: Text("Mmm..."),
+                                      subtitle: Text.rich(TextSpan(
+                                          text:
+                                              "No encuentro nada con esos datos, por favor revisá los números e intenta nuevamente...",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black87)))),
+                                ),
+                              if (!datos.consultaok &&
+                                  txtOrdenController.text.length > 0 &&
+                                  txtPackingListController.text.length > 0)
                                 Card(
                                   color: Colors.red,
                                   child: ListTile(
@@ -229,445 +249,233 @@ class _FerniOnlineState extends State<FerniOnline> {
                                           EdgeInsets.fromLTRB(15, 10, 25, 0),
                                       title: Text("Upss..."),
                                       subtitle: Text.rich(TextSpan(
-                                          text: datos.error
-                                                  .toString()
-                                                  .replaceAll("<br>", "\n") +
-                                              "\n",
+                                          text:
+                                              "Por favor intente nuevamente...",
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.white)))),
                                 ),
-                              if (datos.idArtic != "")
+                              if (datos.nroPedido != null &&
+                                  datos.nroPedido != "" &&
+                                  ("F" + datos.idSucRet.toString()) !=
+                                      Util.obtenerIDSucursal())
+                                Card(
+                                    color: Colors.yellow,
+                                    child: ListTile(
+                                        contentPadding:
+                                            EdgeInsets.fromLTRB(15, 10, 25, 0),
+                                        title: Text("Atención"),
+                                        subtitle: Text.rich(TextSpan(
+                                            text:
+                                                "Pedido para retirar en Ferni " +
+                                                    datos.idSucRet.toString(),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black87))))),
+                              if (datos.nroPedido != null &&
+                                  datos.nroPedido != "")
                                 Card(
                                   color: Colors.white70,
                                   child: ListTile(
                                     contentPadding:
                                         EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                    title: Text((datos.descripcion != "")
-                                        ? datos.descripcion.toString()
-                                        : ""),
+                                    title: Text("Orden " +
+                                        datos.nroPedido.toString() +
+                                        " - " +
+                                        datos.nroPrecin.toString()),
                                     subtitle: Text.rich(
                                       TextSpan(
                                         children: [
-                                          if (datos.precio != "")
-                                            TextSpan(
-                                              text: "\$ " +
-                                                  datos.precio.toString() +
+                                          TextSpan(
+                                              text: datos.nombre
+                                                      .toString()
+                                                      .toTitleCase() +
+                                                  "\n",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black)),
+                                          TextSpan(
+                                              text: datos.formaenvio
+                                                      .toString()
+                                                      .toCapitalized() +
+                                                  ": "),
+                                          TextSpan(
+                                              text: datos.idSucRet.toString() +
                                                   "\n",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  color: (datos.oferta != "")
-                                                      ? Colors.red
-                                                      : Colors.black),
-                                            ),
-                                          if (datos.oferta != "")
-                                            TextSpan(
-                                                text: datos.oferta.toString() +
-                                                    " "),
-                                          if (datos.promoHasta != "")
-                                            TextSpan(
-                                              text: "Hasta: " +
-                                                  datos.promoHasta.toString() +
+                                                  color: Colors.black)),
+                                          TextSpan(text: "Pedido : "),
+                                          TextSpan(
+                                              text: DateFormat('dd-MM-yy HH:mm')
+                                                      .format(DateFormat(
+                                                              "yyyy-MM-dd't'HH:mm:ss")
+                                                          .parse(datos.fecha
+                                                              .toString())) +
                                                   "\n",
-                                            ),
-                                          if (idSucursal != "")
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black)),
+                                          TextSpan(text: "Remitado: "),
+                                          TextSpan(
+                                              text: DateFormat('dd-MM-yy HH:mm')
+                                                      .format(DateFormat(
+                                                              "yyyy-MM-dd't'HH:mm:ss")
+                                                          .parse(datos.fechaRemi
+                                                              .toString())) +
+                                                  "\n",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black)),
+                                          if (datos.leidosuc != null &&
+                                              datos.leidosuc != "")
                                             TextSpan(
-                                                text:
-                                                    "Sucursal: " + idSucursal),
+                                                text: "Llegó a sucursal : "),
+                                          if (datos.leidosuc != null &&
+                                              datos.leidosuc != "")
+                                            TextSpan(
+                                                text: DateFormat(
+                                                            'dd-MM-yy HH:mm')
+                                                        .format(DateFormat(
+                                                                "yyyy-MM-dd HH:mm")
+                                                            .parse(datos
+                                                                .leidosuc
+                                                                .toString())) +
+                                                    "\n",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black)),
+                                          if (datos.leidosuc != null &&
+                                              datos.leidosuc != "")
+                                            TextSpan(text: "Recibido por : "),
+                                          if (datos.leidosuc != null &&
+                                              datos.leidosuc != "")
+                                            TextSpan(
+                                                text: datos.recibidosuc
+                                                        .toString()
+                                                        .toTitleCase() +
+                                                    "\n",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black)),
+                                          if (datos.entregado != null &&
+                                              datos.entregado != "")
+                                            TextSpan(text: "Entregado : "),
+                                          if (datos.entregado != null &&
+                                              datos.entregado != "")
+                                            TextSpan(
+                                                text: DateFormat(
+                                                            'dd-MM-yy HH:mm')
+                                                        .format(DateFormat(
+                                                                "yyyy-MM-dd HH:mm")
+                                                            .parse(datos
+                                                                .entregado
+                                                                .toString())) +
+                                                    "\n",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black)),
+                                          if (datos.entregado != null &&
+                                              datos.entregado != "")
+                                            TextSpan(text: "Entregado por : "),
+                                          if (datos.entregado != null &&
+                                              datos.entregado != "")
+                                            TextSpan(
+                                                text: datos.entregadosuc
+                                                        .toString()
+                                                        .toCapitalized() +
+                                                    "\n",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black)),
+                                          TextSpan(text: "Ítems: "),
+                                          TextSpan(
+                                              text: datos.cantItems.toString() +
+                                                  "\n",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black)),
                                         ],
                                       ),
                                     ),
-                                    leading: Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          .1,
-                                      child: (datos.imagen != null &&
-                                              datos.imagen != "")
-                                          ? GestureDetector(
-                                              child: Hero(
-                                                  tag: "Imagen1",
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: Util.urlBase() +
-                                                        "verificadores/imagenes/" +
-                                                        datos.imagen.toString(),
-                                                    progressIndicatorBuilder: (context,
-                                                            url,
-                                                            downloadProgress) =>
-                                                        CircularProgressIndicator(
-                                                            value:
-                                                                downloadProgress
-                                                                    .progress),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Icon(Icons.error),
-                                                  )),
-                                              onTap: () {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) {
-                                                  return DetailScreen(
-                                                    titulo:
-                                                        datos.nombre.toString(),
-                                                    listOfUrls: datos.imagenes,
-                                                  );
-                                                }));
-                                              },
-                                            )
-                                          : Container(),
-                                    ),
                                   ),
                                 ),
-                              if (datos.condVta != "" &&
-                                  datos.condVta.toString().toLowerCase() == "n")
+                              if (datos.nroPedido != null &&
+                                  datos.nroPedido != "" &&
+                                  datos.remitado != null &&
+                                  datos.remitado.toString() == "s")
                                 Card(
-                                  color: Colors.yellow,
-                                  child: ListTile(
-                                    contentPadding:
-                                        EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                    title: Text("Atención"),
-                                    subtitle:
-                                        Text("Artículo en Colas de Stock"),
-                                  ),
-                                ),
-                              if (datos.idArtic != "")
-                                Card(
-                                  color: Colors.white70,
-                                  child: ListTile(
-                                    contentPadding:
-                                        EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                    title: Text("Cantidad a inventariar"),
-                                    subtitle: Row(
-                                      children: [
-                                        Expanded(
-                                            flex: 3,
-                                            child: TextField(
-                                              controller: txtCantController,
-                                              autocorrect: false,
-                                              autofocus: true,
-                                              enableSuggestions: false,
-                                              maxLength: 13,
-                                              inputFormatters: [
-                                                UpperCaseTextFormatter(),
-                                                LengthLimitingTextInputFormatter(
-                                                  13,
-                                                ),
-                                              ],
-                                              keyboardType: TextInputType
-                                                  .numberWithOptions(
-                                                      signed: true,
-                                                      decimal: false),
-                                              decoration: InputDecoration(
-                                                  border: OutlineInputBorder(),
-                                                  hintText: 'Cantidad',
-                                                  counterStyle: TextStyle(
-                                                    height: double.minPositive,
-                                                  ),
-                                                  counterText: ""),
-                                            )),
-                                        Expanded(
-                                          flex: 1,
-                                          child: TextButton.icon(
-                                              style: TextButton.styleFrom(
-                                                  primary: Colors.blue,
-                                                  backgroundColor: Colors.white,
-                                                  minimumSize:
-                                                      Size.fromHeight(50)),
-                                              icon: Icon(Icons.check),
-                                              label: Text(""),
-                                              onPressed: () => {
-                                                    inventariar(
-                                                        txtCantController.text,
-                                                        "",
-                                                        datos),
-                                                  }),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              if (datos.idArtic != "")
-                                Card(
-                                  color: Colors.white70,
-                                  child: ListTile(
-                                    contentPadding:
-                                        EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                    title: Text("Existencias"),
-                                    subtitle: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "Stock: "),
-                                                      if (datos.stock != "")
-                                                        TextSpan(
-                                                          text: datos.stock
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "CD: "),
-                                                      if (datos.stockCD != "")
-                                                        TextSpan(
-                                                          text: datos.stockCD
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "F3: "),
-                                                      if (datos.stockF3 != "")
-                                                        TextSpan(
-                                                          text: datos.stockF3
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "F6: "),
-                                                      if (datos.stockF6 != "")
-                                                        TextSpan(
-                                                          text: datos.stockF6
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "F9: "),
-                                                      if (datos.stockF9 != "")
-                                                        TextSpan(
-                                                          text: datos.stockF9
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                )
-                                              ]),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(
-                                                          text: "Exhib.: "),
-                                                      if (datos.exhibicion !=
-                                                          null)
-                                                        TextSpan(
-                                                          text: datos.exhibicion
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "F1: "),
-                                                      if (datos.stockF1 != "")
-                                                        TextSpan(
-                                                          text: datos.stockF1
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "F4: "),
-                                                      if (datos.stockF4 != "")
-                                                        TextSpan(
-                                                          text: datos.stockF4
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "F7: "),
-                                                      if (datos.stockF7 != "")
-                                                        TextSpan(
-                                                          text: datos.stockF7
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ]),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(
-                                                          text: "Cat. Gen: "),
-                                                      if (datos.categPub != "")
-                                                        TextSpan(
-                                                          text: datos.categPub
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "F2: "),
-                                                      if (datos.stockF2 != "")
-                                                        TextSpan(
-                                                          text: datos.stockF2
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "F5: "),
-                                                      if (datos.stockF5 != "")
-                                                        TextSpan(
-                                                          text: datos.stockF5
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(text: "F8: "),
-                                                      if (datos.stockF8 != "")
-                                                        TextSpan(
-                                                          text: datos.stockF8
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ]),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          )),
-                    ),
+                                    color: Colors.white70,
+                                    child: ListTile(
+                                      contentPadding:
+                                          EdgeInsets.fromLTRB(15, 10, 25, 0),
+                                      title: Text("Acciones"),
+                                      subtitle: Column(
+                                        children: [
+                                          if (datos.leidosuc == null ||
+                                              datos.leidosuc == "")
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  0, 8, 4, 8),
+                                              child: TextButton.icon(
+                                                style: TextButton.styleFrom(
+                                                    primary: Colors.blueAccent,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    minimumSize:
+                                                        Size.fromHeight(50)),
+                                                icon: Icon(LineIcons.dolly),
+                                                label: Text("Llegó a depósito"),
+                                                onPressed: () => setState(() {
+                                                  llegoDeposito(datos);
+                                                }),
+                                              ),
+                                            ),
+                                          if (datos.leidosuc != null &&
+                                              datos.leidosuc != "" &&
+                                              (datos.entregado == null ||
+                                                  datos.entregado == ""))
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  0, 8, 4, 8),
+                                              child: TextButton.icon(
+                                                style: TextButton.styleFrom(
+                                                    primary: Colors.deepPurple,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    minimumSize:
+                                                        Size.fromHeight(50)),
+                                                icon: Icon(LineIcons
+                                                    .clipboardWithCheck),
+                                                label:
+                                                    Text("Entregado a Cliente"),
+                                                onPressed: () => setState(() {
+                                                  entregarPedido(datos);
+                                                }),
+                                              ),
+                                            ),
+                                          if (Util.obtenerIDSucursal() == "CD")
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  0, 8, 4, 8),
+                                              child: TextButton.icon(
+                                                style: TextButton.styleFrom(
+                                                    primary: Colors.red,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    minimumSize:
+                                                        Size.fromHeight(50)),
+                                                icon: Icon(LineIcons.undo),
+                                                label: Text("Retorno a CD"),
+                                                onPressed: () =>
+                                                    setState(() {}),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ))
+                            ]))),
                   ],
                 ),
               ),
@@ -689,28 +497,32 @@ class _FerniOnlineState extends State<FerniOnline> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
     }
+    FocusManager.instance.primaryFocus?.unfocus();
 
-    String urlBase = Util.urlBase();
+    String url =
+        "http://192.168.100.245/verificadores/consulta.aspx?vpfv=1&usu=" +
+            codigoUsuario +
+            "&packing=" +
+            packingList +
+            "&nropedido=" +
+            orden +
+            "&ope=" +
+            codigoUsuario;
 
-    final response = await http.get(
-        Uri.parse( "http://192.168.100.245/verificadores/verificadores/consulta.aspx?vpfv=1&usu=" + codigoUsuario +"&packing="+ packingList+"&nropedido=" +orden+"&ope="+codigoUsuario));
+    final response = await http.get(Uri.parse(url));
 
-     
-    var parsedJson = json.decode(response.body);
+    var parsedJson = json.decode(response.body.toLowerCase());
     print(response.body);
 
     setState(() {
-      datos = Consulta.fromJson(parsedJson);
+      datos = SeguimientoFO.fromJson(parsedJson);
     });
   }
 
-  inventariar(String cantidad, String ubicacion, Consulta datos) async {
+  llegoDeposito(SeguimientoFO datos) async {
     String textoAlerta = "";
-/* 
-    try {
-    //  if (!verificarCantidad(txtCantController.text, context) ||
-    //      !verificarUbicacion(txtUbicacionController.text, context)) return;
 
+    try {
       if (codigoUsuario != "") {
         final prefs = await SharedPreferences.getInstance();
 
@@ -722,51 +534,35 @@ class _FerniOnlineState extends State<FerniOnline> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
 
-        String idArtic = datos.idArtic.toString();
-
-        setState(() {
-          txtCantController.text = "";
-          txtOrdenController.text = "";
-        });
-
-        String url = Util.urlBase(esPrecios: false) +
-            "verificadores/consulta.aspx?inv=1&sku=" +
-            idArtic +
-            "&bar=" +
-            idArtic +
-            "&usu=" +
-            codigoUsuario +
+        String url = "http://192.168.100.245/" +
+            "verificadores/consulta.aspx?ldfv=1&usu=" +
+            codigoUsuario.trim() +
+            " " +
+            prefs.getString("login_name").toString() +
+            "&packing=" +
+            datos.nroPrecin.toString() +
+            "&nropedido=" +
+            datos.nroPedido.toString() +
             "&ope=" +
-            codigoUsuario +
-            "&qty=" +
-            cantidad +
-            "&loc=" +
-            txtUbicacionController.text; 
+            codigoUsuario;
 
         var res = await http.get(Uri.parse(url));
 
         var resBody =
             json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
 
-        if (resBody["invetariook"] == true) {
-          listaUltimos.insert(
-              0, cantidad + " x " + datos.descripcion.toString() + "\n");
-
-          if (listaUltimos.length > 10) listaUltimos.removeAt(10);
-
+        if (resBody["consultaok"] == true) {
           setState(() {
-            txtCantController.text = "";
+            txtPackingListController.text = "";
             txtOrdenController.text = "";
             datos.limpiar();
             FocusManager.instance.primaryFocus?.unfocus();
-            codigoFocus.requestFocus();
-
-            cantidadEspecial = 0;
-            precioEspecial = 0;
-            mostrarOfertaEspecial = false;
-            ultimos = listaUltimos.join("\n");
+            packingFocus.requestFocus();
           });
-
+          SnackBar snackBar = SnackBar(
+            content: Text("Registro existoso ..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         } else {
           SnackBar snackBar = SnackBar(
             content: Text("◔_◔...Hubo un problema: " +
@@ -794,7 +590,122 @@ class _FerniOnlineState extends State<FerniOnline> {
       content: Text(textoAlerta),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    */
+  }
+
+  entregarPedido(SeguimientoFO datos) async {
+    String textoAlerta = "";
+
+    try {
+      if (codigoUsuario != "") {
+        final prefs = await SharedPreferences.getInstance();
+
+        FocusManager.instance.primaryFocus?.unfocus();
+        if (prefs.getString("login_user") != codigoUsuario) {
+          SnackBar snackBar = SnackBar(
+            content: Text("◔_◔...verificá tu usuario..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+
+        await showAlertDialog(context);
+
+        String url = "http://192.168.100.245/" +
+            "verificadores/consulta.aspx?ecfv=1&usu=" +
+            codigoUsuario.trim() +
+            " " +
+            prefs.getString("login_name").toString() +
+            "&packing=" +
+            datos.nroPrecin.toString() +
+            "&nropedido=" +
+            datos.nroPedido.toString() +
+            "&ope=" +
+            codigoUsuario +
+            "&cet=" +
+            CompraAdicional;
+
+        var res = await http.get(Uri.parse(url));
+
+        var resBody =
+            json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
+
+        if (resBody["consultaok"] == true) {
+          setState(() {
+            txtPackingListController.text = "";
+            txtOrdenController.text = "";
+            datos.limpiar();
+            FocusManager.instance.primaryFocus?.unfocus();
+            packingFocus.requestFocus();
+          });
+          SnackBar snackBar = SnackBar(
+            content: Text("Registro existoso ..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else {
+          SnackBar snackBar = SnackBar(
+            content: Text("◔_◔...Hubo un problema: " +
+                resBody["mensaje"].toString() +
+                " ..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      } else {
+        SnackBar snackBar = SnackBar(
+          content: Text(
+              "◔_◔...No me dijiste quien sos, completá tu usuario por favor..."),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } catch (error) {
+      textoAlerta =
+          "⊙﹏⊙... se produjo un error al enviar los datos de FerniOnline.";
+      txtUsuarioController.value = TextEditingValue(text: "");
+    }
+// Find the ScaffoldMessenger in the widget tree
+// and use it to show a SnackBar.
+
+    SnackBar snackBar = SnackBar(
+      content: Text(textoAlerta),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  showAlertDialog(BuildContext context) async {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("No"),
+      onPressed: () {
+        setState(() {
+          CompraAdicional = "0";
+        });
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Si"),
+      onPressed: () {
+        setState(() {
+          CompraAdicional = "1";
+        });
+        Navigator.of(context).pop();
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Compra adicional"),
+      content: Text(
+          "El cliente tiene intenciones de ver o comprar algo más dentro de la sucursal?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   void buscaUsuario(String str, BuildContext contexto) async {
