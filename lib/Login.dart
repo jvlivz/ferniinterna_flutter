@@ -41,7 +41,7 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  late FocusNode PassFocus;
+  late FocusNode passFocus;
 
   @override
   Widget build(BuildContext context) {
@@ -104,15 +104,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   void buscaUsuario(String usuario, String pass, BuildContext contexto) async {
     String textoAlerta = "";
-    String codigoUsuario = "";
-    String nombreUsuario = "";
-    String urlBase = await Util.urlBase();
+    String urlBase =  Util.urlBase();
     final prefs = await SharedPreferences.getInstance();
     try {
       //?lin=1&usu=" & TxtUsuario.Text.ToLowerCase().Trim()  &"&pass="& passEncriptada
 
       String passEncriptada =
-          EncriptarPass(usuario.toLowerCase().trim() + "sALT3AD1TO" + pass)
+          encriptarPass(usuario.toLowerCase().trim() + "sALT3AD1TO" + pass)
               .toUpperCase();
       var res = await http.get(Uri.parse(urlBase +
           "verificadores/consulta.aspx?lin=1&usu=" +
@@ -127,8 +125,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
         await prefs.setString('login_name', resBody["NOMBRE"]);
         await prefs.setString('login_user', resBody["USUARIO"]);
-        codigoUsuario = resBody["USUARIO"];
-        nombreUsuario = resBody["NOMBRE"];
+        //codigoUsuario = resBody["USUARIO"];
+        //nombreUsuario = resBody["NOMBRE"];
 
         Usuario usuario = new Usuario(
             nombre: resBody["NOMBRE"],
@@ -153,8 +151,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       } else {
         await prefs.remove('login_name');
         await prefs.remove('login_user');
-        codigoUsuario = "";
-        nombreUsuario = "";
+        //codigoUsuario = "";
+        //nombreUsuario = "";
         textoAlerta = "◔_◔... No encuentro tu usuario en el sistema.";
         nameController.value = TextEditingValue(text: "");
         passwordController.value = TextEditingValue(text: "");
@@ -162,8 +160,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     } catch (error) {
       await prefs.remove('login_name');
       await prefs.remove('login_user');
-      codigoUsuario = "";
-      nombreUsuario = "";
+      //codigoUsuario = "";
+      //nombreUsuario = "";
       textoAlerta =
           "⊙﹏⊙... se produjo un error al obtener los datos de tu usuario.";
       nameController.value = TextEditingValue(text: "");
@@ -184,7 +182,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   }
 }
 
-String EncriptarPass(String s) {
+String encriptarPass(String s) {
   var bytes = utf8.encode(s); // data being hashed
 
   var digest = sha512.convert(bytes);

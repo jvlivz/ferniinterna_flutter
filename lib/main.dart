@@ -1,14 +1,13 @@
 import 'dart:async';
-
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:ferniinterna/FerniOnline.dart';
 import 'package:ferniinterna/Inventario.dart';
 import 'package:ferniinterna/Login.dart';
-import 'package:ferniinterna/exhibiciones.dart';
 import 'package:ferniinterna/precios.dart';
 import 'package:ferniinterna/util.dart';
 import 'package:ferniinterna/verificador.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icon.dart';
+import 'package:flutter/services.dart';
 import 'package:line_icons/line_icons.dart';
 
 void main() {
@@ -59,17 +58,59 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   StreamController<bool> _streamController = new StreamController.broadcast();
   final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
+  bool _esAutorizado = false;
+  ConnectivityResult _connectionStatus = ConnectivityResult.none;
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
 
-    if (!_streamController.hasListener)
-      _streamController.addStream(Stream.fromFuture(Util.verificarRed()));
+    initConnectivity();
+
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  }
+
+  Future<void> initConnectivity() async {
+    late ConnectivityResult result;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      print('Couldn\'t check connectivity status' + e.message.toString());
+      return;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    await Util.verificarRed();
+    setState(() {
+      print("ip " + Util.wifiIP.toString());
+      print("autorizado " + Util.esAutorizado.toString());
+
+      if (Util.esAutorizado != null && Util.esAutorizado == true)
+        _esAutorizado = true;
+      else
+        _esAutorizado = false;
+      _connectionStatus = result;
+    });
   }
 
   @override
   void dispose() {
+    _connectivitySubscription.cancel();
+
     _streamController.close();
     super.dispose();
   }
@@ -113,14 +154,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 abrirFerniplastCom();
               },
             ),
-            ListTile(
-              title: const Text('Descuento Empleados'),
-              leading: Icon(Icons.recent_actors),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-              },
-            ),
+            if (_esAutorizado)
+              ListTile(
+                title: const Text('Descuento Empleados'),
+                leading: Icon(Icons.recent_actors),
+                onTap: () {
+                  // Update the state of the app.
+                  // ...
+                },
+              ),
             ListTile(
               title: const Text('Facebook grupo Ferni'),
               leading: Icon(Icons.groups),
@@ -166,15 +208,15 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min ,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Wrap(
                         spacing: 0.0, // gap between adjacent chips
                         runSpacing: 4.0, // gap between lines
                         children: <Widget>[
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: true,
+                              status: _esAutorizado,
+                              
                               texto: "Verificador",
                               icono: LineIcons.barcode,
                               colorIcono: Colors.green,
@@ -184,8 +226,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         builder: (context) => Verificador()),
                                   )),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: true,
+                              status: _esAutorizado,
+                              
                               texto: "Imprimir precios",
                               icono: LineIcons.receipt,
                               colorIcono: Colors.lightBlue,
@@ -195,8 +237,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         builder: (context) => Precios()),
                                   )),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: true,
+                              status: _esAutorizado,
+                              
                               texto: "Exhibiciones",
                               colorIcono: Colors.deepOrange,
                               icono: LineIcons.shapes,
@@ -206,8 +248,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         builder: (context) => Login()),
                                   )),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: true,
+                              status: _esAutorizado,
+                              
                               texto: "FerniOnline",
                               colorIcono: Colors.indigo,
                               icono: LineIcons.shoppingCart,
@@ -217,8 +259,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         builder: (context) => FerniOnline()),
                                   )),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: true,
+                              status: _esAutorizado,
+                              
                               texto: "Inventario",
                               colorIcono: Colors.amber,
                               icono: LineIcons.checkSquare,
@@ -228,57 +270,50 @@ class _MyHomePageState extends State<MyHomePage> {
                                         builder: (context) => Inventario()),
                                   )),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: true,
+                              status: _esAutorizado,
+                              
                               texto: "Mono",
                               colorIcono: Color.fromARGB(255, 47, 201, 9),
                               icono: LineIcons.book,
                               onPressed: () => abrirmono()),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: false,
+                              status: _esAutorizado,
                               texto: "Catálogo de ofertas",
                               icono: LineIcons.tag,
                               colorIcono: Colors.deepPurple,
                               onPressed: () => abrirOfertas()),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: false,
+                              status: true,
                               texto: "#ActitudFerni",
                               colorIcono: Color.fromARGB(255, 206, 63, 19),
                               icono: LineIcons.peopleCarry,
                               onPressed: () => abrirDDOO()),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: false,
+                              status: _esAutorizado,
                               texto: "Intranet",
                               colorIcono: Color.fromARGB(255, 19, 98, 202),
                               icono: LineIcons.confluence,
                               onPressed: () => abrirIntranet()),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: false,
+                              status: _esAutorizado,
                               texto: "Novedades Mkt",
                               colorIcono: Color.fromARGB(255, 219, 80, 16),
                               icono: LineIcons.newspaper,
                               onPressed: () => abrirMkt()),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: false,
+                              status: true,
                               texto: "Facebook",
                               colorIcono: Color.fromARGB(255, 52, 118, 218),
                               icono: LineIcons.facebook,
                               onPressed: () => abrirFacebook()),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: false,
+                              status: true,
                               texto: "Instagram",
                               colorIcono: Color.fromARGB(255, 218, 52, 163),
                               icono: LineIcons.instagram,
                               onPressed: () => abrirInstagram()),
                           SquareButton(
-                              controller: _streamController,
-                              soloFerni: false,
+                              status: true,
                               texto: "TikTok",
                               colorIcono: Color.fromARGB(255, 52, 218, 80),
                               icono: LineIcons.video,
@@ -300,7 +335,7 @@ class _MyHomePageState extends State<MyHomePage> {
   verCatalogo() {}
 
   abrirOfertas() {
-    bool sucursalResult = (Util.esSucursal  == true);
+    bool sucursalResult = (Util.esSucursal == true);
 
     if (sucursalResult)
       Util.launchURL("https://www.ferniplast.com/nuestras-ofertas");
@@ -309,7 +344,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   abrirmono() {
-    bool sucursalResult = (Util.esSucursal  == true);
+    bool sucursalResult = (Util.esSucursal == true);
 
     if (sucursalResult) Util.launchURL("http://192.168.100.245/mono/");
   }
@@ -358,25 +393,22 @@ class SquareButton extends StatelessWidget {
       required this.icono,
       required this.colorIcono,
       required this.onPressed,
-      required this.soloFerni,
-      required this.controller})
+      required this.status})
       : super(key: key);
 
-  final dynamic controller;
+  final bool status;
   final String texto;
   final IconData icono;
   final VoidCallback onPressed;
   final Color colorIcono;
-  final bool soloFerni;
 
   @override
   Widget build(BuildContext context) {
-    final Color rojoFerni = Color.fromARGB(255, 32, 32, 32);
+    //final Color rojoFerni = Color.fromARGB(255, 32, 32, 32);
 
     return StreamBuilder<bool>(
       builder: (BuildContext context, snapShot) {
-        if (!soloFerni ||
-            (!snapShot.hasError && snapShot.hasData && snapShot.data == true)) {
+        if (status) {
           return Padding(
               padding: EdgeInsets.all(MediaQuery.of(context).size.width * .008),
               child: Material(
@@ -418,7 +450,6 @@ class SquareButton extends StatelessWidget {
         } else
           return SizedBox.shrink();
       },
-      stream: controller.stream,
     );
   }
 }

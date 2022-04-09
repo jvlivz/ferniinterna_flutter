@@ -1,4 +1,3 @@
-import 'package:flutter_html/shims/dart_ui_real.dart';
 
 class SeguimientoFO {
   bool consultaok = false;

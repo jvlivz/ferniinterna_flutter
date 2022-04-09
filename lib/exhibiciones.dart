@@ -83,7 +83,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
       txtCodigoController.text = "";
       return;
     }
-    String urlBase =  Util.urlBase();
+    String urlBase = Util.urlBase();
 
     final response = await http
         .get(Uri.parse(urlBase + "verificadores/consulta.aspx?cod=" + codigo));
@@ -429,7 +429,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
                                                             TextSpan(
                                                                 text: "T: "),
                                                             if (datos.exhibT !=
-                                                                null)
+                                                                0)
                                                               TextSpan(
                                                                 text: datos
                                                                     .exhibT
@@ -460,7 +460,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
                                                             TextSpan(
                                                                 text: "E: "),
                                                             if (datos.exhibE !=
-                                                                null)
+                                                                0)
                                                               TextSpan(
                                                                 text: datos
                                                                     .exhibE
@@ -506,7 +506,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
                                                             TextSpan(
                                                                 text: "Acc: "),
                                                             if (datos.exhibA !=
-                                                                null)
+                                                                0)
                                                               TextSpan(
                                                                 text: datos
                                                                     .exhibA
@@ -1126,7 +1126,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
       } else {
         if ((cantidad >= datos.minimo && cantidad <= datos.exhNMax) ||
             usuario.appexhib.toString() == "1") {
-          _SolicitarExhibicion(
+          _solicitarExhibicion(
               tipoExhibicion, "", "", datos, cantidad, usuario);
         } else {
           SnackBar snackBar = SnackBar(
@@ -1143,7 +1143,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
         _showDialog(context, datos, cantidad, usuario, tipoExhibicion,
             "Esta seguro de solicitar que este producto no se reponga durante la vigencia?");
       else if (cantidad >= 0)
-        _SolicitarExhibicion(tipoExhibicion, "", "", datos, cantidad, usuario);
+        _solicitarExhibicion(tipoExhibicion, "", "", datos, cantidad, usuario);
       else {
         SnackBar snackBar = SnackBar(
           content: Text("Mínimo: 0"),
@@ -1155,7 +1155,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
     FocusManager.instance.primaryFocus?.unfocus();
   }
 
-  _SolicitarExhibicion(TipoExhibicion tipoExhibicion, String inicio, String fin,
+  _solicitarExhibicion(TipoExhibicion tipoExhibicion, String inicio, String fin,
       Consulta datos, int cantidad, Usuario usuario) {
     String mensaje = "";
     bool permitida = true;
@@ -1281,7 +1281,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
   _showDialog(BuildContext context, Consulta datos, int cantidad,
       Usuario usuario, TipoExhibicion tipoExhibicion, String texto) {
     VoidCallback continueCallBack = () => {
-          _SolicitarExhibicion(tipoExhibicion, "", "", datos, cantidad, usuario)
+          _solicitarExhibicion(tipoExhibicion, "", "", datos, cantidad, usuario)
         };
 
     VoidCallback cancelCallBack = () => {};

@@ -365,7 +365,7 @@ class _VerificadorState extends State<Verificador> {
                                                       TextSpan(
                                                           text: "Exhib.: "),
                                                       if (datos.exhibicion !=
-                                                          null)
+                                                          0)
                                                         TextSpan(
                                                           text: datos.exhibicion
                                                               .toString(),

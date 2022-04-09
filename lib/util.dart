@@ -1,8 +1,8 @@
 //import 'dart:io';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Util {
@@ -33,9 +33,14 @@ class Util {
           wifiName = await info.getWifiName(); // FooNetwork
           wifiIP = await info.getWifiIP();
           String currentIp = obtenerIpSucursal();
-          if (currentIp != "0.0.0.0") return true;
+          print(currentIp);
+          if (currentIp != "0.0.0.0")
+            return true;
+          else
+            esAutorizado = false;
         }
-      }
+      } else
+        esAutorizado = false;
     } catch (e) {
       print(e);
     }
@@ -44,17 +49,17 @@ class Util {
 
   static String obtenerIpSucursal({bool esPrecios = false}) {
     var ip = "0.0.0.0";
+    esAutorizado = false;
     //if (esPrecios) ip = "192.168.3.204";
 
-  ip = "192.168.3.253";
+    if (wifiIP.toString() == "192.168.232.2" &&
+        wifiName.toString() == "AndroidWifi") ip = "192.168.3.253";
 
     if (wifiIP != null &&
         wifiName != null &&
         wifiName.toString().toLowerCase() == "reyes") {
       String currentIp = wifiIP.toString().split('.')[2];
       print(currentIp);
-
-      
 
       if (currentIp == "1" || currentIp == "141") ip = "192.168.1.253";
       if (currentIp == "2" || currentIp == "142") ip = "192.168.2.253";
@@ -82,8 +87,8 @@ class Util {
     else
       esSucursal = true;
 
-    print(esAutorizado);
-    print(esSucursal);
+    print("esAutorizado " + esAutorizado.toString());
+    print("esSucursal " + esSucursal.toString());
     print(wifiName);
     print(wifiIP);
     print(ip);
@@ -124,14 +129,14 @@ class Util {
   }
 
   static bool isDouble(String s) {
-    if (s == null || s.trim() == "") {
+    if (s.trim() == "") {
       return false;
     }
     return double.tryParse(s) != null;
   }
 
   static bool isInteger(String s) {
-    if (s == null || s.trim() == "") {
+    if (s.trim() == "") {
       return false;
     }
     return int.tryParse(s) != null;
@@ -150,6 +155,10 @@ class UpperCaseTextFormatter extends TextInputFormatter {
 }
 
 extension StringCasingExtension on String {
-  String toCapitalized() => length > 0 ?'${this[0].toUpperCase()}${substring(1).toLowerCase()}':'';
-  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
+  String toCapitalized() =>
+      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
+      .split(' ')
+      .map((str) => str.toCapitalized())
+      .join(' ');
 }

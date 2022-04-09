@@ -1,21 +1,16 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
 //import 'dart:developer';
-import 'package:ferniinterna/Consulta.dart';
 import 'package:ferniinterna/SeguimientoFO.dart';
-import 'package:ferniinterna/Usuario.dart';
 //import 'package:ferniinterna/Usuario.dart';
 import 'package:ferniinterna/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 //import 'package:flutter_html/flutter_html.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'DetailScreen.dart';
 
 class FerniOnline extends StatefulWidget {
   @override
@@ -37,7 +32,7 @@ class _FerniOnlineState extends State<FerniOnline> {
   List data = [];
   String codigoUsuario = "";
   String nombreUsuario = "";
-  String CompraAdicional = "0";
+  String compraAdicional = "0";
 
   void cargaUsuario() async {
     // Obtain shared preferences.
@@ -104,9 +99,6 @@ class _FerniOnlineState extends State<FerniOnline> {
     ]);
 
     //debugPaintSizeEnabled = true;
-
-    String idSucursal = "";
-    idSucursal = Util.obtenerIDSucursal();
 
     return Scaffold(
       appBar: AppBar(
@@ -468,10 +460,9 @@ class _FerniOnlineState extends State<FerniOnline> {
                                                         Size.fromHeight(50)),
                                                 icon: Icon(LineIcons.undo),
                                                 label: Text("Retorno a CD"),
-                                                onPressed: () =>
-                                                    setState(() {
-                                                      retornoCD(datos);
-                                                    }),
+                                                onPressed: () => setState(() {
+                                                  retornoCD(datos);
+                                                }),
                                               ),
                                             ),
                                         ],
@@ -521,8 +512,7 @@ class _FerniOnlineState extends State<FerniOnline> {
     });
   }
 
-
-retornoCD(SeguimientoFO datos) async {
+  retornoCD(SeguimientoFO datos) async {
     String textoAlerta = "";
 
     try {
@@ -697,7 +687,7 @@ retornoCD(SeguimientoFO datos) async {
             "&ope=" +
             codigoUsuario +
             "&cet=" +
-            CompraAdicional;
+            compraAdicional;
 
         var res = await http.get(Uri.parse(url));
 
@@ -751,7 +741,7 @@ retornoCD(SeguimientoFO datos) async {
       child: Text("No"),
       onPressed: () {
         setState(() {
-          CompraAdicional = "0";
+          compraAdicional = "0";
         });
         Navigator.of(context).pop();
       },
@@ -760,7 +750,7 @@ retornoCD(SeguimientoFO datos) async {
       child: Text("Si"),
       onPressed: () {
         setState(() {
-          CompraAdicional = "1";
+          compraAdicional = "1";
         });
         Navigator.of(context).pop();
       },

@@ -2,14 +2,12 @@ import 'dart:convert';
 //import 'dart:developer';
 //import 'dart:html';
 import 'package:ferniinterna/Consulta.dart';
-import 'package:ferniinterna/Usuario.dart';
 import 'package:ferniinterna/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -665,7 +663,7 @@ class _PreciosState extends State<Precios> {
                                                       TextSpan(
                                                           text: "Exhib.: "),
                                                       if (datos.exhibicion !=
-                                                          null)
+                                                          0)
                                                         TextSpan(
                                                           text: datos.exhibicion
                                                               .toString(),
@@ -856,7 +854,7 @@ class _PreciosState extends State<Precios> {
     try {
       if (codigoUsuario != "") {
         String urlBase = Util.urlBase(esPrecios: true);
-        final prefs = await SharedPreferences.getInstance();
+        //final prefs = await SharedPreferences.getInstance();
 
         String impresora = "";
 
