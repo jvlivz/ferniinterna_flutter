@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:ferniinterna/ConvenioEmpleados.dart';
 import 'package:ferniinterna/FerniOnline.dart';
 import 'package:ferniinterna/Inventario.dart';
 import 'package:ferniinterna/Login.dart';
@@ -59,7 +60,6 @@ class _MyHomePageState extends State<MyHomePage> {
   StreamController<bool> _streamController = new StreamController.broadcast();
   final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
   bool _esAutorizado = false;
-  ConnectivityResult _connectionStatus = ConnectivityResult.none;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
@@ -103,7 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
         _esAutorizado = true;
       else
         _esAutorizado = false;
-      _connectionStatus = result;
     });
   }
 
@@ -132,15 +131,15 @@ class _MyHomePageState extends State<MyHomePage> {
           // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: [
-            const UserAccountsDrawerHeader(
+            UserAccountsDrawerHeader(
               accountName: Text("Hola Usuario, bienvenido!"),
               accountEmail: Text(""),
               currentAccountPicture: CircleAvatar(
-                radius: 50.0,
-                backgroundColor: const Color(0xFF778899),
-                backgroundImage:
-                    NetworkImage("http://tineye.com/images/widgets/mona.jpg"),
-              ),
+                  radius: 50.0,
+                  backgroundColor: const Color(0xFF778899),
+                  backgroundImage: Image.asset("assets/images/fr.png").image
+                  //NetworkImage("http://tineye.com/images/widgets/mona.jpg"),
+                  ),
               decoration: BoxDecoration(
                 color: Color.fromARGB(255, 254, 0, 36),
               ),
@@ -159,13 +158,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 title: const Text('Descuento Empleados'),
                 leading: Icon(Icons.recent_actors),
                 onTap: () {
-                  // Update the state of the app.
-                  // ...
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ConvenioEmpleados()),
+                  );
                 },
               ),
             ListTile(
               title: const Text('Facebook grupo Ferni'),
-              leading: Icon(Icons.groups),
+              leading: Icon(LineIcons.peopleCarry),
               onTap: () {
                 // Update the state of the app.
                 // ...
@@ -173,8 +175,17 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
+              title: const Text('TikTok'),
+              leading: Icon(LineIcons.video),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+                abrirTiktok();
+              },
+            ),
+            ListTile(
               title: const Text('Instagram'),
-              leading: Icon(Icons.photo_camera),
+              leading: Icon(LineIcons.instagram),
               onTap: () {
                 // Update the state of the app.
                 // ...
@@ -183,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ListTile(
               title: const Text('Facebook '),
-              leading: Icon(Icons.facebook),
+              leading: Icon(LineIcons.facebook),
               onTap: () {
                 // Update the state of the app.
                 // ...
@@ -192,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ListTile(
               title: const Text('Twitter'),
-              leading: Icon(Icons.message),
+              leading: Icon(LineIcons.twitter),
               onTap: () {
                 // Update the state of the app.
                 // ...
@@ -216,7 +227,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: <Widget>[
                           SquareButton(
                               status: _esAutorizado,
-                              
                               texto: "Verificador",
                               icono: LineIcons.barcode,
                               colorIcono: Colors.green,
@@ -227,7 +237,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   )),
                           SquareButton(
                               status: _esAutorizado,
-                              
                               texto: "Imprimir precios",
                               icono: LineIcons.receipt,
                               colorIcono: Colors.lightBlue,
@@ -238,7 +247,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   )),
                           SquareButton(
                               status: _esAutorizado,
-                              
                               texto: "Exhibiciones",
                               colorIcono: Colors.deepOrange,
                               icono: LineIcons.shapes,
@@ -249,7 +257,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   )),
                           SquareButton(
                               status: _esAutorizado,
-                              
                               texto: "FerniOnline",
                               colorIcono: Colors.indigo,
                               icono: LineIcons.shoppingCart,
@@ -260,7 +267,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   )),
                           SquareButton(
                               status: _esAutorizado,
-                              
                               texto: "Inventario",
                               colorIcono: Colors.amber,
                               icono: LineIcons.checkSquare,
@@ -271,7 +277,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   )),
                           SquareButton(
                               status: _esAutorizado,
-                              
                               texto: "Mono",
                               colorIcono: Color.fromARGB(255, 47, 201, 9),
                               icono: LineIcons.book,

@@ -49,11 +49,12 @@ class Util {
 
   static String obtenerIpSucursal({bool esPrecios = false}) {
     var ip = "0.0.0.0";
+
     esAutorizado = false;
     //if (esPrecios) ip = "192.168.3.204";
 
-    if (wifiIP.toString() == "192.168.232.2" &&
-        wifiName.toString() == "AndroidWifi") ip = "192.168.3.253";
+    //if (wifiIP.toString() == "192.168.232.2" &&
+    //    wifiName.toString() == "AndroidWifi") ip = "192.168.3.253";
 
     if (wifiIP != null &&
         wifiName != null &&
@@ -61,29 +62,50 @@ class Util {
       String currentIp = wifiIP.toString().split('.')[2];
       print(currentIp);
 
-      if (currentIp == "1" || currentIp == "141") ip = "192.168.1.253";
-      if (currentIp == "2" || currentIp == "142") ip = "192.168.2.253";
-      if (currentIp == "3" || currentIp == "143") ip = "192.168.3.253";
-      if (currentIp == "4" || currentIp == "144") ip = "192.168.4.253";
-      if (currentIp == "5") ip = "192.168.5.253";
-      if (currentIp == "6" || currentIp == "6") ip = "192.168.6.253";
-      if (currentIp == "107" || currentIp == "147") ip = "192.168.107.253";
-      if (currentIp == "80" || currentIp == "83") ip = "192.168.80.253";
-      if (currentIp == "90" ||
-          currentIp == "91" ||
-          currentIp == "92" ||
-          currentIp == "93" ||
-          currentIp == "94" ||
-          currentIp == "95" ||
-          currentIp == "96") ip = "192.168.90.253";
+      if (esPrecios) {
+        if (currentIp == "1" || currentIp == "141") ip = "192.168.1.223";
+        if (currentIp == "2" || currentIp == "142") ip = "192.168.2.223";
+        if (currentIp == "3" || currentIp == "143") ip = "192.168.3.204";
+        if (currentIp == "4" || currentIp == "144") ip = "192.168.4.223";
+        if (currentIp == "5") ip = "192.168.5.223";
+        if (currentIp == "6" || currentIp == "6") ip = "192.168.6.223";
+        if (currentIp == "107" || currentIp == "147") ip = "192.168.107.223";
+        if (currentIp == "80" || currentIp == "83") ip = "192.168.80.223";
+        if (currentIp == "90" ||
+            currentIp == "91" ||
+            currentIp == "92" ||
+            currentIp == "93" ||
+            currentIp == "94" ||
+            currentIp == "95" ||
+            currentIp == "96") ip = "192.168.90.223";
+      } else {
+        if (currentIp == "1" || currentIp == "141") ip = "192.168.1.253";
+        if (currentIp == "2" || currentIp == "142") ip = "192.168.2.253";
+        if (currentIp == "3" || currentIp == "143") ip = "192.168.3.253";
+        if (currentIp == "4" || currentIp == "144") ip = "192.168.4.253";
+        if (currentIp == "5") ip = "192.168.5.253";
+        if (currentIp == "6" || currentIp == "6") ip = "192.168.6.253";
+        if (currentIp == "107" || currentIp == "147") ip = "192.168.107.253";
+        if (currentIp == "80" || currentIp == "83") ip = "192.168.80.253";
+        if (currentIp == "90" ||
+            currentIp == "91" ||
+            currentIp == "92" ||
+            currentIp == "93" ||
+            currentIp == "94" ||
+            currentIp == "95" ||
+            currentIp == "96") ip = "192.168.90.253";
+      }
+
       if (currentIp == "10" || currentIp == "9" || currentIp == "14")
         ip = "192.168.9.245";
       if (currentIp == "7") ip = "192.168.100.245";
     }
 
+
     if (ip != "0.0.0.0") esAutorizado = true;
-    if (ip != "192.168.9.245")
-      esSucursal = true;
+    
+    if (ip == "192.168.9.245")
+      esSucursal = false;
     else
       esSucursal = true;
 
@@ -106,8 +128,9 @@ class Util {
     if (ip.startsWith("192.168.6.")) return "F6";
     if (ip.startsWith("192.168.107.")) return "F7";
     if (ip.startsWith("192.168.80.")) return "F8";
-    if (ip.startsWith("192.168.100.")) return "CD";
-    if (ip.startsWith("192.168.9.")) return "MY";
+    if (ip.startsWith("192.168.9.") || ip.startsWith("192.168.100."))
+      return "MY";
+    if (ip.startsWith("192.168.7.")) return "CD";
     if (ip.startsWith("192.168.90.")) return "F9";
 
     return "";
