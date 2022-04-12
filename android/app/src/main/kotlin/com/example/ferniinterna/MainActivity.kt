@@ -1,4 +1,4 @@
-package com.ferniplast.ferniinterna
+package com.ferniplast.Ferniinterna
 
 import io.flutter.embedding.android.FlutterActivity
 
