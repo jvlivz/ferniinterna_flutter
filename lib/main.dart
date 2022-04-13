@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
-         initConnectivity();
+    initConnectivity();
   }
 
   Future<void> initConnectivity() async {
