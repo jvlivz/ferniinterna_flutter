@@ -71,7 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
-    initConnectivity();
+
+         initConnectivity();
   }
 
   Future<void> initConnectivity() async {
@@ -166,15 +167,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
               ),
-            ListTile(
-              title: const Text('Facebook grupo Ferni'),
-              leading: Icon(LineIcons.peopleCarry),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-                abrirFacebookGrupo();
-              },
-            ),
+            if (_esAutorizado)
+              ListTile(
+                title: const Text('Facebook grupo Ferni'),
+                leading: Icon(LineIcons.peopleCarry),
+                onTap: () {
+                  // Update the state of the app.
+                  // ...
+                  abrirFacebookGrupo();
+                },
+              ),
             ListTile(
               title: const Text('TikTok'),
               leading: Icon(LineIcons.video),
@@ -289,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               colorIcono: Colors.deepPurple,
                               onPressed: () => abrirOfertas()),
                           SquareButton(
-                              status: true,
+                              status: _esAutorizado,
                               texto: "#ActitudFerni",
                               colorIcono: Color.fromARGB(255, 206, 63, 19),
                               icono: LineIcons.peopleCarry,
