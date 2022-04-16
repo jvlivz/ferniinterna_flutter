@@ -45,16 +45,25 @@ class _VerificadorState extends State<Verificador> {
   void leerDatos(String codigo) async {
     if (codigo.length == 0) return;
 
-    String urlBase = Util.urlBase();
+    try {
+      String urlBase = Util.urlBase();
 
-    final response = await http
-        .get(Uri.parse(urlBase + "verificadores/consulta.aspx?cod=" + codigo));
-    var parsedJson = json.decode(response.body);
-    print(response.body);
+      final response = await http.get(
+          Uri.parse(urlBase + "verificadores/consulta.aspx?cod=" + codigo));
+      var parsedJson = json.decode(response.body);
+      print(response.body);
 
-    setState(() {
-      datos = Consulta.fromJson(parsedJson);
-    });
+      setState(() {
+        datos = Consulta.fromJson(parsedJson);
+      });
+    } catch (e) {
+      SnackBar snackBar = SnackBar(
+        content: Text(
+            "◔_◔...Ocurrió un error al intentar obtener los datos... " +
+                e.toString()),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   void initState() {
@@ -364,8 +373,7 @@ class _VerificadorState extends State<Verificador> {
                                                     children: [
                                                       TextSpan(
                                                           text: "Exhib.: "),
-                                                      if (datos.exhibicion !=
-                                                          0)
+                                                      if (datos.exhibicion != 0)
                                                         TextSpan(
                                                           text: datos.exhibicion
                                                               .toString(),

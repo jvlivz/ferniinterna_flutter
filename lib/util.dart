@@ -96,14 +96,13 @@ class Util {
             currentIp == "96") ip = "192.168.90.253";
       }
 
-      if (currentIp == "10" || currentIp == "9" || currentIp == "14")
+      if (currentIp == "100" || currentIp == "9" || currentIp == "14")
         ip = "192.168.9.245";
       if (currentIp == "7") ip = "192.168.100.245";
     }
 
-
     if (ip != "0.0.0.0") esAutorizado = true;
-    
+
     if (ip == "192.168.9.245")
       esSucursal = false;
     else
@@ -128,8 +127,9 @@ class Util {
     if (ip.startsWith("192.168.6.")) return "F6";
     if (ip.startsWith("192.168.107.")) return "F7";
     if (ip.startsWith("192.168.80.")) return "F8";
-    if (ip.startsWith("192.168.9.") || ip.startsWith("192.168.100."))
-      return "MY";
+    if (ip.startsWith("192.168.9.") ||
+        ip.startsWith("192.168.100.") ||
+        ip.startsWith("192.168.14.")) return "MY";
     if (ip.startsWith("192.168.7.")) return "CD";
     if (ip.startsWith("192.168.90.")) return "F9";
 

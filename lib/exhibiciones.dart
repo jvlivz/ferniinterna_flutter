@@ -1126,7 +1126,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
       } else {
         if ((cantidad >= datos.minimo && cantidad <= datos.exhNMax) ||
             usuario.appexhib.toString() == "1") {
-          _solicitarExhibicion(
+          await _solicitarExhibicion(
               tipoExhibicion, "", "", datos, cantidad, usuario);
         } else {
           SnackBar snackBar = SnackBar(
@@ -1143,7 +1143,8 @@ class _ExhibicionesState extends State<Exhibiciones> {
         _showDialog(context, datos, cantidad, usuario, tipoExhibicion,
             "Esta seguro de solicitar que este producto no se reponga durante la vigencia?");
       else if (cantidad >= 0)
-        _solicitarExhibicion(tipoExhibicion, "", "", datos, cantidad, usuario);
+        await _solicitarExhibicion(
+            tipoExhibicion, "", "", datos, cantidad, usuario);
       else {
         SnackBar snackBar = SnackBar(
           content: Text("Mínimo: 0"),
@@ -1156,7 +1157,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
   }
 
   _solicitarExhibicion(TipoExhibicion tipoExhibicion, String inicio, String fin,
-      Consulta datos, int cantidad, Usuario usuario) {
+      Consulta datos, int cantidad, Usuario usuario) async {
     String mensaje = "";
     bool permitida = true;
 
@@ -1242,6 +1243,20 @@ class _ExhibicionesState extends State<Exhibiciones> {
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
+    String tipo = "", url = "";
+    switch (tipoExhibicion) {
+      case TipoExhibicion.Estacional:
+        tipo = "2";
+        break;
+      case TipoExhibicion.Normal:
+        tipo = "1";
+        break;
+      case TipoExhibicion.Temporal:
+        tipo = "3";
+        break;
+      default:
+        break;
+    }
 /*			Case "estacional"
 				tipo = "2"
 			Case "acciones"
@@ -1253,33 +1268,64 @@ class _ExhibicionesState extends State<Exhibiciones> {
 */
 
     if (permitida) {
-      //	url = "http://" & Estado.obtenerIpSucursal(True) & "/verificadores/consulta.aspx?exh=1&sku=" & sku & "&bar=" & barcode & "&usu=" & StateManager.GetSetting2("Operador","") &"&qty=" & txtCantidad.Text.Trim  & "&ope=" & lblOperador.Text.SubString(5).Trim & "&tex=" & tipo & "&fie=" & btnDesde.xLBL.Text & "&ffe=" & btnHasta.xLBL.Text
-
-      listaUltimos.insert(
-          0,
+      url = "http://" +
+          Util.obtenerIpSucursal() +
+          "/verificadores/consulta.aspx?exh=1&sku=" +
+          datos.idArtic.toString() +
+          "&bar=" +
+          datos.idArtic.toString() +
+          "&usu=" +
+          usuario.nombre.toString() +
+          "&qty=" +
           cantidad.toString() +
-              " - " +
-              tipoExhibicion.toString().split('.').last +
-              " - " +
-              datos.descripcion.toString() +
-              "\n");
+          "&ope=" +
+          usuario.usuario.toString() +
+          "&tex=" +
+          tipo +
+          "&fie=" +
+          inicio +
+          "&ffe=" +
+          fin;
 
-      if (listaUltimos.length > 10) listaUltimos.removeAt(10);
+      var res = await http.get(Uri.parse(url));
 
-      setState(() {
-        mostrarExhibicion = false;
-        txtCantController.text = "";
-        txtCodigoController.text = "";
-        datos.limpiar();
-        codigoFocus.requestFocus();
-        ultimos = listaUltimos.join("\n");
-      });
+      var resBody =
+          json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
+
+      if (resBody["exhibicionesok"] == "true") {
+        listaUltimos.insert(
+            0,
+            cantidad.toString() +
+                " - " +
+                tipoExhibicion.toString().split('.').last +
+                " - " +
+                datos.descripcion.toString() +
+                "\n");
+
+        if (listaUltimos.length > 10) listaUltimos.removeAt(10);
+
+        setState(() {
+          mostrarExhibicion = false;
+          txtCantController.text = "";
+          txtCodigoController.text = "";
+          datos.limpiar();
+          codigoFocus.requestFocus();
+          ultimos = listaUltimos.join("\n");
+        });
+      } else {
+        if (resBody["mensaje"] != "") {
+          SnackBar snackBar = SnackBar(
+            content: Text(resBody["mensaje"]),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      }
     }
     //ult = lblDescripcion.Text & " " & lblTipoExhibicion.Text & " " & txtCantidad.Text
   }
 
   _showDialog(BuildContext context, Consulta datos, int cantidad,
-      Usuario usuario, TipoExhibicion tipoExhibicion, String texto) {
+      Usuario usuario, TipoExhibicion tipoExhibicion, String texto) async {
     VoidCallback continueCallBack = () => {
           _solicitarExhibicion(tipoExhibicion, "", "", datos, cantidad, usuario)
         };
