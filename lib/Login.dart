@@ -104,7 +104,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   void buscaUsuario(String usuario, String pass, BuildContext contexto) async {
     String textoAlerta = "";
-    String urlBase =  Util.urlBase();
+    String urlBase = Util.urlBase();
     final prefs = await SharedPreferences.getInstance();
     try {
       //?lin=1&usu=" & TxtUsuario.Text.ToLowerCase().Trim()  &"&pass="& passEncriptada
@@ -118,25 +118,30 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           "&pass=" +
           passEncriptada));
 
-      var resBody = json.decode(res.body.replaceAll(":NULL", ":null"));
+      var resBody = json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
 
-      if (resBody["USUARIO"] != "") {
+      if (resBody["usuario"] != null && resBody["usuario"] != "") {
         // Obtain shared preferences.
 
-        await prefs.setString('login_name', resBody["NOMBRE"]);
-        await prefs.setString('login_user', resBody["USUARIO"]);
-        //codigoUsuario = resBody["USUARIO"];
-        //nombreUsuario = resBody["NOMBRE"];
+        await prefs.setString('login_name', resBody["nombre"]);
+        await prefs.setString('login_user', resBody["usuario"]);
+        //codigoUsuario = resBody["usuario"];
+        //nombreUsuario = resBody["nombre"];
 
         Usuario usuario = new Usuario(
-            nombre: resBody["NOMBRE"],
-            appexhib: resBody["APPEXHIB"],
+            nombre: resBody["nombre"],
+            appexhib: resBody["appexhib"],
             pass: pass,
-            prioridad: resBody["PRIORIDAD"],
-            usuario: resBody["USUARIO"]);
+            prioridad: resBody["prioridad"],
+            usuario: resBody["usuario"]);
 
-        textoAlerta = "♥‿♥ Hola " + resBody["NOMBRE"];
+        textoAlerta = "♥‿♥ Hola " + resBody["nombre"];
         FocusManager.instance.primaryFocus?.unfocus();
+
+        SnackBar snackBar = SnackBar(
+          content: Text(textoAlerta),
+        );
+        ScaffoldMessenger.of(contexto).showSnackBar(snackBar);
 
         Navigator.push(
             context,
@@ -166,19 +171,15 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           "⊙﹏⊙... se produjo un error al obtener los datos de tu usuario.";
       nameController.value = TextEditingValue(text: "");
       passwordController.value = TextEditingValue(text: "");
+
+      SnackBar snackBar = SnackBar(
+        content: Text(textoAlerta),
+      );
+      ScaffoldMessenger.of(contexto).showSnackBar(snackBar);
       log(error.toString());
     }
 // Find the ScaffoldMessenger in the widget tree
 // and use it to show a SnackBar.
-
-    setState(() {
-      // this.codigoUsuario = codigoUsuario;
-      // this.nombreUsuario = nombreUsuario;
-    });
-    SnackBar snackBar = SnackBar(
-      content: Text(textoAlerta),
-    );
-    ScaffoldMessenger.of(contexto).showSnackBar(snackBar);
   }
 }
 

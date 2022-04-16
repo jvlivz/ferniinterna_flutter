@@ -53,8 +53,8 @@ class Util {
     esAutorizado = false;
     //if (esPrecios) ip = "192.168.3.204";
 
-    if (wifiIP.toString() == "192.168.232.2" &&
-        wifiName.toString() == "AndroidWifi") ip = "192.168.3.253";
+    //if (wifiIP.toString() == "192.168.232.2" &&
+    //    wifiName.toString() == "AndroidWifi") ip = "192.168.3.253";
 
     if (wifiIP != null &&
         wifiName != null &&

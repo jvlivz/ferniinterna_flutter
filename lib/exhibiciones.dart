@@ -1289,29 +1289,37 @@ class _ExhibicionesState extends State<Exhibiciones> {
 
       var res = await http.get(Uri.parse(url));
 
-      var resBody = json.decode(res.body.replaceAll(":NULL", ":null"));
+      var resBody =
+          json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
 
-      if (resBody["CODIGO"] != "") {}
+      if (resBody["exhibicionesok"] == "true") {
+        listaUltimos.insert(
+            0,
+            cantidad.toString() +
+                " - " +
+                tipoExhibicion.toString().split('.').last +
+                " - " +
+                datos.descripcion.toString() +
+                "\n");
 
-      listaUltimos.insert(
-          0,
-          cantidad.toString() +
-              " - " +
-              tipoExhibicion.toString().split('.').last +
-              " - " +
-              datos.descripcion.toString() +
-              "\n");
+        if (listaUltimos.length > 10) listaUltimos.removeAt(10);
 
-      if (listaUltimos.length > 10) listaUltimos.removeAt(10);
-
-      setState(() {
-        mostrarExhibicion = false;
-        txtCantController.text = "";
-        txtCodigoController.text = "";
-        datos.limpiar();
-        codigoFocus.requestFocus();
-        ultimos = listaUltimos.join("\n");
-      });
+        setState(() {
+          mostrarExhibicion = false;
+          txtCantController.text = "";
+          txtCodigoController.text = "";
+          datos.limpiar();
+          codigoFocus.requestFocus();
+          ultimos = listaUltimos.join("\n");
+        });
+      } else {
+        if (resBody["mensaje"] != "") {
+          SnackBar snackBar = SnackBar(
+            content: Text(resBody["mensaje"]),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      }
     }
     //ult = lblDescripcion.Text & " " & lblTipoExhibicion.Text & " " & txtCantidad.Text
   }
