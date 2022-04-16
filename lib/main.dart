@@ -101,7 +101,8 @@ class _MyHomePageState extends State<MyHomePage> {
       print("ip " + Util.wifiIP.toString());
       print("autorizado " + Util.esAutorizado.toString());
 
-      if (Util.esAutorizado != null && Util.esAutorizado == true)
+      if (_esAutorizado ||
+          (Util.esAutorizado != null && Util.esAutorizado == true))
         _esAutorizado = true;
       else
         _esAutorizado = false;
@@ -217,6 +218,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: Center(
+          heightFactor: 1,
+          widthFactor: 1,
           child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
