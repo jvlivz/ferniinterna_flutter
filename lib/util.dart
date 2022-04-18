@@ -26,7 +26,7 @@ class Util {
         }
 
 // You can can also directly ask the permission about its status.
-        if (await Permission.location.isGranted) {
+        if (await Permission.location.serviceStatus.isEnabled) {
           // The OS restricts access, for example because of parental controls.
           final info = NetworkInfo();
 
@@ -38,9 +38,12 @@ class Util {
             return true;
           else
             esAutorizado = false;
-        }
+        } //else
+        //openAppSettings();
       } else
         esAutorizado = false;
+
+      return true;
     } catch (e) {
       print(e);
     }

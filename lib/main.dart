@@ -91,12 +91,12 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!mounted) {
       return Future.value(null);
     }
-
     return _updateConnectionStatus(result);
   }
 
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    await Util.verificarRed();
+    while (!await Util.verificarRed()) print("verificando red");
+
     setState(() {
       print("ip " + Util.wifiIP.toString());
       print("autorizado " + Util.esAutorizado.toString());

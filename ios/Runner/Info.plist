@@ -48,5 +48,16 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Ferniplast requiere uso de cámara para verificar precios con códigos de barra.</string>
+	<!-- Permission options for the `location` group -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Necesito ubicación para utilizar la app</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Necesito ubicación para utilizar la app</string>
+    <key>NSLocationUsageDescription</key>
+    <string>Necesito ubicación para utilizar la app</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Necesito ubicación para utilizar la app</string>
 </dict>
 </plist>
