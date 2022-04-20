@@ -44,6 +44,7 @@ class _FullScreenImageState extends State<FullScreenImage> {
     if (prefs.getString('login_user') != null)
       setState(() {
         codigoUsuario = prefs.getString('login_user').toString();
+        nombreUsuario = prefs.getString('login_name').toString();
       });
     txtUsuarioController.value = TextEditingValue(
       text: codigoUsuario,
@@ -53,15 +54,15 @@ class _FullScreenImageState extends State<FullScreenImage> {
     );
   }
 
-  String dropdownvalue = 'Se ve pixelada o de mala calidad.';
+  String dropdownvalue = 'Está pixelada o es de mala calidad.';
 
   // List of items in our dropdown menu
   var items = [
-    'Pixelada o de mala calidad.',
+    'Está pixelada o es de mala calidad.',
     'Está mal cortada.',
     'No corresponde al producto.',
-    'Cambió la presentación.',
-    'Otro problema.',
+    'No corresponde a la presentación.',
+    'Tiene otro problema.',
   ];
 
   void initState() {
@@ -100,7 +101,7 @@ class _FullScreenImageState extends State<FullScreenImage> {
                       child: TextField(
                         controller: txtUsuarioController,
                         autocorrect: false,
-                        autofocus: true,
+                        autofocus: false,
                         enableSuggestions: false,
                         maxLength: 4,
                         onChanged: (String str) {
@@ -124,30 +125,33 @@ class _FullScreenImageState extends State<FullScreenImage> {
                     ),
                     Expanded(
                       flex: 4,
-                      child: DropdownButton(
-                        // Initial Value
-                        value: dropdownvalue,
-
-                        // Down Arrow Icon
-                        icon: const Icon(Icons.keyboard_arrow_down),
-
-                        // Array list of items
-                        items: items.map((String items) {
-                          return DropdownMenuItem(
-                            value: items,
-                            child: Text(items),
-                          );
-                        }).toList(),
-                        // After selecting the desired option,it will
-                        // change button value to selected value
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            dropdownvalue = newValue!;
-                          });
-                        },
-                      ),
+                      child: Text(nombreUsuario),
                     ),
                   ]),
+                ),
+                Center(
+                  child: DropdownButton(
+                    // Initial Value
+                    value: dropdownvalue,
+                    style: TextStyle(fontSize: 14, color: Colors.black87),
+                    // Down Arrow Icon
+                    icon: const Icon(Icons.keyboard_arrow_down),
+
+                    // Array list of items
+                    items: items.map((String items) {
+                      return DropdownMenuItem(
+                        value: items,
+                        child: Text(items),
+                      );
+                    }).toList(),
+                    // After selecting the desired option,it will
+                    // change button value to selected value
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        dropdownvalue = newValue!;
+                      });
+                    },
+                  ),
                 ),
                 Container(
                     height: 30,
@@ -155,9 +159,7 @@ class _FullScreenImageState extends State<FullScreenImage> {
                     child: ElevatedButton(
                       child: const Text('Reportar a Marketing'),
                       onPressed: () {
-                        if (dropdownvalue.isNotEmpty) {
-                          enviarReporte(dropdownvalue, widget.idArtic);
-                        }
+                        enviarReporte(dropdownvalue.toLowerCase(), widget.idArtic);
                       },
                     )),
               ]),
@@ -198,7 +200,7 @@ class _FullScreenImageState extends State<FullScreenImage> {
         await prefs.remove('login_user');
         codigoUsuario = "";
         nombreUsuario = "";
-        textoAlerta = "◔_◔... No encuentro tu ususario en el sistema.";
+        textoAlerta = "◔_◔... No encuentro tu usuario en el sistema.";
         txtUsuarioController.value = TextEditingValue(text: "");
       }
     } catch (error) {
@@ -232,19 +234,24 @@ class _FullScreenImageState extends State<FullScreenImage> {
 
         String nombre = prefs.getString('login_name') ?? "";
 
-        var res = await http.get(Uri.parse(urlBase +
+        String url = urlBase +
             "verificadores/consulta.aspx?ric=" +
             idArtic +
             "&rim=" +
             dropdownvalue +
             "&riu=" +
-            base64
-                .encode(utf8.encode(nombre + " " + Util.obtenerIDSucursal())) +
+            base64.encode(utf8.encode(nombreUsuario)) +
             "&rio=" +
-            base64.encode(utf8.encode(dropdownvalue))));
+            base64.encode(utf8.encode(dropdownvalue));
 
-        var resBody =
-            json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
+        await http.get(Uri.parse(url));
+
+        print(url);
+        SnackBar snackBar = SnackBar(
+          content: Text("♥‿♥...Gracias! ..."),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.pop(context);
       } else {
         SnackBar snackBar = SnackBar(
           content: Text(
