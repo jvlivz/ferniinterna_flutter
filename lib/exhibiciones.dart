@@ -263,32 +263,31 @@ class _ExhibicionesState extends State<Exhibiciones> {
                                                   datos.promoHasta.toString() +
                                                   "\n",
                                             ),
-                                          if (datos.bin > 0)
+                                          if (datos.bin != null &&
+                                              datos.bin! > 0)
                                             TextSpan(
                                               children: [
                                                 TextSpan(text: "BIN: "),
-                                                if (datos.bin > 0)
-                                                  TextSpan(
-                                                    text: datos.bin.toString(),
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black),
-                                                  ),
+                                                TextSpan(
+                                                  text: datos.bin.toString(),
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black),
+                                                ),
                                               ],
                                             ),
-                                          if (datos.bm > 0)
+                                          if (datos.bm != null && datos.bm! > 0)
                                             TextSpan(
                                               children: [
                                                 TextSpan(text: " BM: "),
-                                                if (datos.bm > 0)
-                                                  TextSpan(
-                                                    text: datos.bm.toString(),
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black),
-                                                  ),
+                                                TextSpan(
+                                                  text: datos.bm.toString(),
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black),
+                                                ),
                                               ],
                                             ),
                                           TextSpan(text: " CG: "),
@@ -609,7 +608,8 @@ class _ExhibicionesState extends State<Exhibiciones> {
                                               ),
                                             ],
                                           ),
-                                        if (datos.exhEtMax > 0)
+                                        if (datos.exhEtMax != null &&
+                                            datos.exhEtMax! > 0)
                                           Row(
                                             children: [
                                               Text.rich(
@@ -1120,11 +1120,18 @@ class _ExhibicionesState extends State<Exhibiciones> {
   enviarExhibicion(TipoExhibicion tipoExhibicion, int cantidad, Consulta datos,
       Usuario usuario) async {
     if (tipoExhibicion == TipoExhibicion.Normal) {
-      if (cantidad == 0 && datos.exhibT <= 0 && datos.exhibE <= 0) {
+      if (datos.exhibT != null &&
+          datos.exhibE != null &&
+          cantidad == 0 &&
+          datos.exhibT! <= 0 &&
+          datos.exhibE! <= 0) {
         _showDialog(context, datos, cantidad, usuario, tipoExhibicion,
             "Esta seguro de solicitar que este producto no se reponga más?");
       } else {
-        if ((cantidad >= datos.minimo && cantidad <= datos.exhNMax) ||
+        if ((datos.minimo != null &&
+                datos.exhNMax != null &&
+                cantidad >= datos.minimo! &&
+                cantidad <= datos.exhNMax!) ||
             usuario.appexhib.toString() == "1") {
           await _solicitarExhibicion(
               tipoExhibicion, "", "", datos, cantidad, usuario);
@@ -1162,8 +1169,9 @@ class _ExhibicionesState extends State<Exhibiciones> {
     bool permitida = true;
 
     //Estacional S con exhib. normal > 0 cualquier cat > prioridad 1 deje cargar exhib estacional, normal y temporaria "Mensaje: Correcto"
-    if (datos.estacional == "S" &&
-        datos.exhibicion > 0 &&
+    if (datos.exhibicion != null &&
+        datos.estacional == "S" &&
+        datos.exhibicion! > 0 &&
         usuario.appexhib == "1" &&
         (tipoExhibicion == TipoExhibicion.Normal ||
             tipoExhibicion == TipoExhibicion.Estacional ||
@@ -1172,7 +1180,9 @@ class _ExhibicionesState extends State<Exhibiciones> {
 
     //ESTACIONAL F con exhib. normal/ESTACIONAL/temp cualquier cat > prioridad 1 "Mensaje: Correcto"
     if (datos.estacional == "F" &&
-        (datos.exhibicion > 0 || datos.exhibE > 0 || datos.exhibT > 0) &&
+        ((datos.exhibicion != null && datos.exhibicion! > 0) ||
+            (datos.exhibE != null && datos.exhibE! > 0) ||
+            (datos.exhibT != null && datos.exhibT! > 0)) &&
         usuario.appexhib == "1" &&
         (tipoExhibicion == TipoExhibicion.Normal ||
             tipoExhibicion == TipoExhibicion.Estacional ||
@@ -1187,8 +1197,9 @@ class _ExhibicionesState extends State<Exhibiciones> {
         mensaje += "Correcto, se cargará su proporción" + "\r\n";
 
       //Estacional S con exhib. normal > 0 categoría # AG > prioridad 2 "Mensaje: Acción no permitida”
-      if (datos.estacional == "S" &&
-          datos.exhibicion > 0 &&
+      if (datos.exhibicion != null &&
+          datos.estacional == "S" &&
+          datos.exhibicion! > 0 &&
           datos.categPub != "AG" &&
           usuario.appexhib == "2") {
         mensaje = "Acción no permitida";
@@ -1202,16 +1213,18 @@ class _ExhibicionesState extends State<Exhibiciones> {
       }
 
       //Estacional S con exhib. normal > 0 categ AG> prioridad 2 "Mensaje: Correcto, se cargara su proporción"
-      if (datos.estacional == "S" &&
-          datos.exhibicion > 0 &&
+      if (datos.exhibicion != null &&
+          datos.estacional == "S" &&
+          datos.exhibicion! > 0 &&
           datos.categPub == "AG" &&
           usuario.appexhib == "2")
         mensaje += "Correcto, se cargara su proporción" + "\r\n";
 
       //ESTACIONAL F con exhib. normal 0 cualquier categoría > prioridad 2 "Mensaje: Correcto, se cargara su proporción"
       //ESTACIONAL F con exhib. normal > 0 cualquier categoría > prioridad 2 "Mensaje: Correcto, se cargará su proporción"
-      if (datos.estacional == "F" &&
-          datos.exhibicion >= 0 &&
+      if (datos.exhibicion != null &&
+          datos.estacional == "F" &&
+          datos.exhibicion! >= 0 &&
           datos.categPub != "AG" &&
           usuario.appexhib == "2")
         mensaje += "Correcto, se cargara su proporción" + "\r\n";
@@ -1222,8 +1235,9 @@ class _ExhibicionesState extends State<Exhibiciones> {
           usuario.appexhib == "1") mensaje += "Correcto" + "\r\n";
 
       //ESTACIONAL F con exhib. normal > 0 categ AG> prioridad 2 “Mensaje: Correcto, se cargara su proporción"
-      if (datos.estacional == "F" &&
-          datos.exhibicion > 0 &&
+      if (datos.exhibicion != null &&
+          datos.estacional == "F" &&
+          datos.exhibicion! > 0 &&
           datos.categPub == "AG" &&
           usuario.appexhib == "2")
         mensaje += "Correcto, se cargara su proporción" + "\r\n";
@@ -1232,7 +1246,8 @@ class _ExhibicionesState extends State<Exhibiciones> {
 
     if ((tipoExhibicion == TipoExhibicion.Temporal ||
             tipoExhibicion == TipoExhibicion.Estacional) &&
-        cantidad > datos.exhEtMax &&
+        datos.exhEtMax != null &&
+        cantidad > datos.exhEtMax! &&
         usuario.appexhib == "2")
       mensaje += "Esta solicitud va a ser evaluada por MKTP" + "\r\n";
 

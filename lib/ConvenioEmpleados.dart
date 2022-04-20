@@ -8,41 +8,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:barcode_widget/barcode_widget.dart';
 
-class ConvenioEmpleados extends StatelessWidget {
-  const ConvenioEmpleados({Key? key}) : super(key: key);
-
-  static const String _title = 'Convenio Empleados ';
-
+class ConvenioEmpleados extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: _title,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            _title,
-            style: new TextStyle(fontFamily: "Gretoon"),
-          ),
-          backgroundColor: Color.fromARGB(255, 254, 0, 36),
-        ),
-        body: const MyStatefulWidget(),
-      ),
-    );
+  State<StatefulWidget> createState() {
+    return _ConvenioEmpleadosState();
   }
 }
 
-class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({Key? key}) : super(key: key);
-
-  @override
-  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
-}
-
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+class _ConvenioEmpleadosState extends State<ConvenioEmpleados> {
   TextEditingController dniController = TextEditingController();
   String ean13 = "";
   String nombreApellido = "";
   String ultimaTrx = "";
+  final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
 
   void initState() {
     super.initState();
@@ -52,75 +30,83 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(10),
-        child: ListView(
-          children: <Widget>[
-            Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(10),
-                child: const Text(
-                  'Ingresa tu DNI',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20),
-                )),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: TextField(
-                autofocus: true,
-                controller: dniController,
-                textInputAction: TextInputAction.next,
-                onSubmitted: (value) {
-                  if (dniController.text.isNotEmpty && value.isNotEmpty)
-                    setState(() {
-                      buscaUsuario(dniController.text, context);
-                    });
-                },
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'DNI',
-                ),
-              ),
+    return Scaffold(
+        appBar: AppBar(
+            title: Text(
+              "Exhibiciones",
+              style: new TextStyle(fontFamily: "Gretoon"),
             ),
-            Container(
-                height: 50,
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: ElevatedButton(
-                  child: const Text('Obtener Credencial'),
-                  onPressed: () {
-                    setState(() {
-                      buscaUsuario(dniController.text, context);
-                    });
-                  },
-                )),
-            if (ean13 != "")
-              Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(10),
-                  child: BarcodeWidget(
-                    barcode: Barcode.ean13(),
-                    data: ean13,
-                  )),
-            if (ean13 != "")
-              Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    nombreApellido,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14),
-                  )),
-            if (ean13 != "")
-              Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    "Última compra: " + ultimaTrx,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14),
-                  )),
-          ],
-        ));
+            backgroundColor: rojoFerni),
+        body: SafeArea(
+            child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: ListView(
+                  children: <Widget>[
+                    Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(10),
+                        child: const Text(
+                          'Ingresa tu DNI',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20),
+                        )),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: TextField(
+                        autofocus: true,
+                        controller: dniController,
+                        textInputAction: TextInputAction.next,
+                        onSubmitted: (value) {
+                          if (dniController.text.isNotEmpty && value.isNotEmpty)
+                            setState(() {
+                              buscaUsuario(dniController.text, context);
+                            });
+                        },
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'DNI',
+                        ),
+                      ),
+                    ),
+                    Container(
+                        height: 50,
+                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        child: ElevatedButton(
+                          child: const Text('Obtener Credencial'),
+                          onPressed: () {
+                            setState(() {
+                              buscaUsuario(dniController.text, context);
+                            });
+                          },
+                        )),
+                    if (ean13 != "")
+                      Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(10),
+                          child: BarcodeWidget(
+                            barcode: Barcode.ean13(),
+                            data: ean13,
+                          )),
+                    if (ean13 != "")
+                      Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            nombreApellido,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 14),
+                          )),
+                    if (ean13 != "")
+                      Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            "Última compra: " + ultimaTrx,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 14),
+                          )),
+                  ],
+                ))));
   }
 
   void cargaUsuario() async {

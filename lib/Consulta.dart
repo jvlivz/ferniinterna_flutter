@@ -28,7 +28,7 @@ class Consulta {
   final String? stockCD;
   final String? ventaPromedio;
   final String? stock;
-  final int exhibicion;
+  final int? exhibicion;
   final String? condVta;
   final String? promoHasta;
   final String? categPub;
@@ -36,16 +36,16 @@ class Consulta {
   final String? imagen;
   final String? nombre;
   final List<String> imagenes;
-  final int bin;
-  final int bm;
-  final int exhibT;
-  final int exhibE;
-  final int exhibA;
+  final int? bin;
+  final int? bm;
+  final int? exhibT;
+  final int? exhibE;
+  final int? exhibA;
   final String? estacional;
   String tipoExhNormal;
-  final int minimo;
-  final int exhNMax;
-  final int exhEtMax;
+  final int? minimo;
+  final int? exhNMax;
+  final int? exhEtMax;
   final String hVigEst;
   final String hVigExh;
   String exhETA;
@@ -99,10 +99,7 @@ class Consulta {
       this.exhEtMax = 0,
       this.hVigEst = "",
       this.hVigExh = "",
-      this.exhETA = ""}
-      
-      );
-
+      this.exhETA = ""});
 
   factory Consulta.fromJson(Map<String, dynamic> json) {
     Consulta consulta = new Consulta();
@@ -151,20 +148,20 @@ class Consulta {
               (json['IMAGENES'] != null) ? List.from(json["IMAGENES"]) : [],
           bin: json['BIN'] ?? 0,
           bm: json['BM'] ?? 0,
-          exhibT: json['EXHIB_T'],
-          exhibE: json['EXHIB_E'],
-          exhibA: json['EXHIB_A'],
-          estacional: json['ESTACIONAL'],
-          minimo: json['MINIMO'],
-          exhNMax: json['EXH_N_MAX'],
-          exhEtMax: json['EXH_ET_MAX'],
-          hVigEst: json['H_VIG_EST'],
-          hVigExh: json["H_VIG_EXH"]);
+          exhibT: json['EXHIB_T'] ?? 0,
+          exhibE: json['EXHIB_E'] ?? 0,
+          exhibA: json['EXHIB_A'] ?? 0,
+          estacional: json['ESTACIONAL'] ?? "",
+          minimo: json['MINIMO'] ?? 0,
+          exhNMax: json['EXH_N_MAX'] ?? 0,
+          exhEtMax: json['EXH_ET_MAX'] ?? 0,
+          hVigEst: json['H_VIG_EST'] ?? "",
+          hVigExh: json["H_VIG_EXH"] ?? "");
 
     return consulta;
   }
 
-  limpiar(){
-    this.idArtic="";
+  limpiar() {
+    this.idArtic = "";
   }
 }
