@@ -55,8 +55,6 @@ class _FerniOnlineState extends State<FerniOnline> {
     barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
         '#FF0000', "Cancelar", true, ScanMode.DEFAULT);
 
-    barcodeScanRes = "05572106618224|23098";
-
     if (barcodeScanRes.contains('|')) {
       setState(() {
         txtPackingListController.text = barcodeScanRes.split('|')[0];
