@@ -106,7 +106,7 @@ class Util {
 
     if (ip != "0.0.0.0") esAutorizado = true;
 
-    ip = "192.168.100.245";
+    //ip = "192.168.100.245";
     if (ip == "192.168.9.245" || ip == "192.168.100.245")
       esSucursal = false;
     else
