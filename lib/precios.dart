@@ -334,6 +334,7 @@ class _PreciosState extends State<Precios> {
                                                     titulo:
                                                         datos.nombre.toString(),
                                                     listOfUrls: datos.imagenes,
+                                                    idArtic: datos.idArtic.toString(),
                                                   );
                                                 }));
                                               },

@@ -5,8 +5,9 @@ import 'FullScreenImage.dart';
 
 class DetailScreen extends StatefulWidget {
   final List<String> listOfUrls;
+  final String idArtic;
   final String titulo;
-  DetailScreen({required this.listOfUrls, required this.titulo});
+  DetailScreen({required this.listOfUrls, required this.titulo, required this.idArtic});
 
   @override
   _DetailScreenState createState() => _DetailScreenState();
@@ -50,6 +51,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     titulo: (index + 1).toString() + " - " + widget.titulo,
                     imageUrl: widget.listOfUrls[index],
                     tag: "detailTag" + index.toString(),
+                    idArtic: widget.idArtic,
                   );
                 }));
               },

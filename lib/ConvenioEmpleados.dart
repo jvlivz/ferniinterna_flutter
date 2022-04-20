@@ -33,7 +33,7 @@ class _ConvenioEmpleadosState extends State<ConvenioEmpleados> {
     return Scaffold(
         appBar: AppBar(
             title: Text(
-              "Exhibiciones",
+              "Descuento Empleados",
               style: new TextStyle(fontFamily: "Gretoon"),
             ),
             backgroundColor: rojoFerni),

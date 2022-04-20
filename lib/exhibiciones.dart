@@ -362,6 +362,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
                                                     titulo:
                                                         datos.nombre.toString(),
                                                     listOfUrls: datos.imagenes,
+                                                    idArtic: datos.idArtic!,
                                                   );
                                                 }));
                                               },

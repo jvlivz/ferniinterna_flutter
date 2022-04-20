@@ -43,10 +43,12 @@ class Util {
       } else
         esAutorizado = false;
 
+
       return true;
     } catch (e) {
       print(e);
     }
+
     return false;
   }
 
@@ -104,9 +106,12 @@ class Util {
       if (currentIp == "7" || currentIp == "75") ip = "192.168.100.245";
     }
 
+       ip = "192.168.3.253";
+
     if (ip != "0.0.0.0") esAutorizado = true;
 
-    //ip = "192.168.100.245";
+
+
     if (ip == "192.168.9.245" || ip == "192.168.100.245")
       esSucursal = false;
     else

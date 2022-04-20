@@ -1,13 +1,29 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ferniinterna/util.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class FullScreenImage extends StatelessWidget {
+class FullScreenImage extends StatefulWidget {
   final String imageUrl;
   final String tag;
   final String titulo;
-  const FullScreenImage(
-      {required this.imageUrl, required this.tag, required this.titulo});
+  final String idArtic;
 
+  FullScreenImage(
+      {required this.imageUrl,
+      required this.tag,
+      required this.titulo,
+      required this.idArtic});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _FullScreenImageState();
+  }
+}
+
+class _FullScreenImageState extends State<FullScreenImage> {
 /*   initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
@@ -17,6 +33,41 @@ class FullScreenImage extends StatelessWidget {
     //SystemChrome.restoreSystemUIOverlays();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   } */
+  final txtUsuarioController = TextEditingController();
+
+  String codigoUsuario = "";
+  String nombreUsuario = "";
+
+  void cargaUsuario() async {
+    // Obtain shared preferences.
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString('login_user') != null)
+      setState(() {
+        codigoUsuario = prefs.getString('login_user').toString();
+      });
+    txtUsuarioController.value = TextEditingValue(
+      text: codigoUsuario,
+      selection: TextSelection.fromPosition(
+        TextPosition(offset: codigoUsuario.length),
+      ),
+    );
+  }
+
+  String dropdownvalue = 'Se ve pixelada o de mala calidad.';
+
+  // List of items in our dropdown menu
+  var items = [
+    'Se ve pixelada o de mala calidad.',
+    'Está mal cortada.',
+    'No corresponde al producto.',
+    'Cambió la presentación.',
+    'Otro problema.',
+  ];
+
+  void initState() {
+    super.initState();
+    cargaUsuario();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,21 +76,91 @@ class FullScreenImage extends StatelessWidget {
       body: Scaffold(
         appBar: AppBar(
             title: Text(
-              titulo,
+              widget.titulo,
               style: new TextStyle(fontFamily: "Gretoon", fontSize: 12),
             ),
             backgroundColor: Color.fromARGB(255, 254, 0, 36)),
         body: SafeArea(
           child: GestureDetector(
             child: Center(
-              child: Hero(
-                tag: tag,
-                child: CachedNetworkImage(
-                  width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.contain,
-                  imageUrl: imageUrl,
+              child: ListView(children: [
+                Hero(
+                  tag: widget.tag,
+                  child: CachedNetworkImage(
+                    width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.contain,
+                    imageUrl: widget.imageUrl,
+                  ),
                 ),
-              ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(children: [
+                    Expanded(
+                      flex: 2,
+                      child: TextField(
+                        controller: txtUsuarioController,
+                        autocorrect: false,
+                        autofocus: true,
+                        enableSuggestions: false,
+                        maxLength: 4,
+                        onChanged: (String str) {
+                          setState(() {
+                            codigoUsuario = "";
+                            nombreUsuario = "";
+                          });
+                        },
+                        onSubmitted: (String str) {
+                          setState(() {
+                            buscaUsuario(str, context);
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: 'Usuario',
+                            counterStyle: TextStyle(
+                              height: double.minPositive,
+                            ),
+                            counterText: ""),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 4,
+                      child: DropdownButton(
+                        // Initial Value
+                        value: dropdownvalue,
+
+                        // Down Arrow Icon
+                        icon: const Icon(Icons.keyboard_arrow_down),
+
+                        // Array list of items
+                        items: items.map((String items) {
+                          return DropdownMenuItem(
+                            value: items,
+                            child: Text(items),
+                          );
+                        }).toList(),
+                        // After selecting the desired option,it will
+                        // change button value to selected value
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            dropdownvalue = newValue!;
+                          });
+                        },
+                      ),
+                    ),
+                  ]),
+                ),
+                Container(
+                    height: 30,
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    child: ElevatedButton(
+                      child: const Text('Reportar a Marketing'),
+                      onPressed: () {
+                        if (dropdownvalue.isNotEmpty) {
+                          enviarReporte(dropdownvalue, widget.idArtic);
+                        }
+                      },
+                    )),
+              ]),
             ),
             onTap: () {
               Navigator.pop(context);
@@ -48,5 +169,95 @@ class FullScreenImage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void buscaUsuario(String str, BuildContext contexto) async {
+    String textoAlerta = "";
+    String codigoUsuario = "";
+    String nombreUsuario = "";
+    String urlBase = Util.urlBase();
+    final prefs = await SharedPreferences.getInstance();
+    try {
+      var res = await http
+          .get(Uri.parse(urlBase + "verificadores/consulta.aspx?ope=" + str));
+
+      var resBody = json.decode(res.body.replaceAll(":NULL", ":null"));
+
+      if (resBody["CODIGO"] != "") {
+        // Obtain shared preferences.
+
+        await prefs.setString('login_name', resBody["NOMBRE"]);
+        await prefs.setString('login_user', resBody["CODIGO"]);
+        codigoUsuario = resBody["CODIGO"];
+        nombreUsuario = resBody["NOMBRE"];
+        textoAlerta = "♥‿♥ Bienvenid@ " + resBody["NOMBRE"];
+        txtUsuarioController.value =
+            TextEditingValue(text: resBody["CODIGO"].toString().trim());
+      } else {
+        await prefs.remove('login_name');
+        await prefs.remove('login_user');
+        codigoUsuario = "";
+        nombreUsuario = "";
+        textoAlerta = "◔_◔... No encuentro tu ususario en el sistema.";
+        txtUsuarioController.value = TextEditingValue(text: "");
+      }
+    } catch (error) {
+      await prefs.remove('login_name');
+      await prefs.remove('login_user');
+      codigoUsuario = "";
+      nombreUsuario = "";
+      textoAlerta =
+          "⊙﹏⊙... se produjo un error al obtener los datos de tu usuario.";
+      txtUsuarioController.value = TextEditingValue(text: "");
+    }
+// Find the ScaffoldMessenger in the widget tree
+// and use it to show a SnackBar.
+
+    setState(() {
+      this.codigoUsuario = codigoUsuario;
+      this.nombreUsuario = nombreUsuario;
+    });
+    SnackBar snackBar = SnackBar(
+      content: Text(textoAlerta),
+    );
+    ScaffoldMessenger.of(contexto).showSnackBar(snackBar);
+  }
+
+  void enviarReporte(String dropdownvalue, String idArtic) async {
+    try {
+      if (codigoUsuario != "") {
+        String urlBase = Util.urlBase();
+
+        final prefs = await SharedPreferences.getInstance();
+
+        String nombre = prefs.getString('login_name') ?? "";
+
+        var res = await http.get(Uri.parse(urlBase +
+            "verificadores/consulta.aspx?ric=" +
+            idArtic +
+            "&rim=" +
+            dropdownvalue +
+            "&riu=" +
+            base64
+                .encode(utf8.encode(nombre + " " + Util.obtenerIDSucursal())) +
+            "&rio=" +
+            base64.encode(utf8.encode(dropdownvalue))));
+
+        var resBody =
+            json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
+      } else {
+        SnackBar snackBar = SnackBar(
+          content: Text(
+              "◔_◔...No me dijiste quien sos, completá tu usuario por favor..."),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } catch (error) {
+      SnackBar snackBar = SnackBar(
+        content: Text(
+            "⊙﹏⊙... se produjo un error al enviar los datos de etiquetas."),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 }

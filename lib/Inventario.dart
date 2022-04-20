@@ -358,6 +358,7 @@ class _InventarioState extends State<Inventario> {
                                                     titulo:
                                                         datos.nombre.toString(),
                                                     listOfUrls: datos.imagenes,
+                                                    idArtic: datos.idArtic!,
                                                   );
                                                 }));
                                               },

@@ -241,6 +241,7 @@ class _VerificadorState extends State<Verificador> {
                                                     titulo:
                                                         datos.nombre.toString(),
                                                     listOfUrls: datos.imagenes,
+                                                    idArtic: datos.idArtic.toString(),
                                                   );
                                                 }));
                                               },
