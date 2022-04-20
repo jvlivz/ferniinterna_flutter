@@ -232,7 +232,7 @@ class _FullScreenImageState extends State<FullScreenImage> {
 
         final prefs = await SharedPreferences.getInstance();
 
-        String nombre = prefs.getString('login_name') ?? "";
+        //String nombre = prefs.getString('login_name') ?? "";
 
         String url = urlBase +
             "verificadores/consulta.aspx?ric=" +
