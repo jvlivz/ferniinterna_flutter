@@ -57,7 +57,7 @@ class _FullScreenImageState extends State<FullScreenImage> {
 
   // List of items in our dropdown menu
   var items = [
-    'Se ve pixelada o de mala calidad.',
+    'Pixelada o de mala calidad.',
     'Está mal cortada.',
     'No corresponde al producto.',
     'Cambió la presentación.',
@@ -96,7 +96,7 @@ class _FullScreenImageState extends State<FullScreenImage> {
                   padding: const EdgeInsets.all(10),
                   child: Row(children: [
                     Expanded(
-                      flex: 2,
+                      flex: 1,
                       child: TextField(
                         controller: txtUsuarioController,
                         autocorrect: false,
