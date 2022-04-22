@@ -106,7 +106,6 @@ class Util {
       if (currentIp == "7" || currentIp == "75") ip = "192.168.100.245";
     }
 
-       ip = "192.168.3.253";
 
     if (ip != "0.0.0.0") esAutorizado = true;
 
