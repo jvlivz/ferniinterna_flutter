@@ -8,98 +8,83 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
-  static const String _title = 'Autorizar ingreso ';
-
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: _title,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            _title,
-            style: new TextStyle(fontFamily: "Gretoon"),
-          ),
-          backgroundColor: Color.fromARGB(255, 254, 0, 36),
-        ),
-        body: const MyStatefulWidget(),
-      ),
-    );
-  }
+  State<Login> createState() => _LoginState();
 }
 
-class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({Key? key}) : super(key: key);
-
-  @override
-  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
-}
-
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+class _LoginState extends State<Login> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   late FocusNode passFocus;
+  final Color rojoFerni = Color.fromARGB(255, 254, 0, 36);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(10),
-        child: ListView(
-          children: <Widget>[
-            Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(10),
-                child: const Text(
-                  'Ingrese sus datos de acceso al ERP',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20),
-                )),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: TextField(
-                autofocus: true,
-                controller: nameController,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Usuario',
-                ),
-              ),
+    return Scaffold(
+        appBar: AppBar(
+            title: Text(
+              "Exhibiciones",
+              style: new TextStyle(fontFamily: "Gretoon"),
             ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: TextField(
-                obscureText: true,
-                onSubmitted: (value) {
-                  if (nameController.text.isNotEmpty && value.isNotEmpty)
-                    setState(() {
-                      buscaUsuario(nameController.text, value, context);
-                    });
-                },
-                controller: passwordController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Clave',
+            backgroundColor: rojoFerni),
+        body: Padding(
+            padding: const EdgeInsets.all(10),
+            child: ListView(
+              children: <Widget>[
+                Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(10),
+                    child: const Text(
+                      'Ingrese sus datos de acceso al ERP',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 20),
+                    )),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: TextField(
+                    autofocus: true,
+                    controller: nameController,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Usuario',
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Container(
-                height: 50,
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: ElevatedButton(
-                  child: const Text('Ingresar'),
-                  onPressed: () {
-                    setState(() {
-                      buscaUsuario(nameController.text, passwordController.text,
-                          context);
-                    });
-                  },
-                )),
-          ],
-        ));
+                Container(
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  child: TextField(
+                    obscureText: true,
+                    onSubmitted: (value) {
+                      if (nameController.text.isNotEmpty && value.isNotEmpty)
+                        setState(() {
+                          buscaUsuario(nameController.text, value, context);
+                        });
+                    },
+                    controller: passwordController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Clave',
+                    ),
+                  ),
+                ),
+                Container(
+                    height: 50,
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    child: ElevatedButton(
+                      child: const Text('Ingresar'),
+                      onPressed: () {
+                        setState(() {
+                          buscaUsuario(nameController.text,
+                              passwordController.text, context);
+                        });
+                      },
+                    )),
+              ],
+            )));
   }
 
   void buscaUsuario(String usuario, String pass, BuildContext contexto) async {
@@ -118,7 +103,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           "&pass=" +
           passEncriptada));
 
-      var resBody = json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
+      var resBody =
+          json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
 
       if (resBody["usuario"] != null && resBody["usuario"] != "") {
         // Obtain shared preferences.
@@ -143,16 +129,17 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         );
         ScaffoldMessenger.of(contexto).showSnackBar(snackBar);
 
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Exhibiciones(),
-              // Pass the arguments as part of the RouteSettings. The
-              // DetailScreen reads the arguments from these settings.
-              settings: RouteSettings(
-                arguments: usuario,
-              ),
-            ));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Exhibiciones(),
+            // Pass the arguments as part of the RouteSettings. The
+            // DetailScreen reads the arguments from these settings.
+            settings: RouteSettings(
+              arguments: usuario,
+            ),
+          ),
+        );
       } else {
         await prefs.remove('login_name');
         await prefs.remove('login_user');

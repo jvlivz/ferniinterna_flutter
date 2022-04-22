@@ -222,11 +222,12 @@ class _MyHomePageState extends State<MyHomePage> {
           widthFactor: 1,
           child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+              child: Center(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                     Wrap(
                         spacing: 0.0, // gap between adjacent chips
                         runSpacing: 4.0, // gap between lines
@@ -330,7 +331,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               icono: LineIcons.video,
                               onPressed: () => abrirTiktok()),
                         ]),
-                  ]))),
+                  ])))),
 
       //   floatingActionButton: FloatingActionButton(
       //     onPressed: (() => Navigator.push(
@@ -448,12 +449,14 @@ class SquareButton extends StatelessWidget {
                               )),
                               Center(
                                   child: Text(
-                                texto,
+                                texto + "\n",
                                 textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     fontSize:
                                         MediaQuery.of(context).size.width *
-                                            .025,
+                                            .035,
                                     color: Colors.grey[700]),
                               ))
                             ]),

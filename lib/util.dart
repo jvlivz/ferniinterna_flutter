@@ -43,7 +43,6 @@ class Util {
       } else
         esAutorizado = false;
 
-
       return true;
     } catch (e) {
       print(e);
@@ -60,6 +59,11 @@ class Util {
 
     //if (wifiIP.toString() == "192.168.232.2" &&
     //    wifiName.toString() == "AndroidWifi") ip = "192.168.3.253";
+
+    
+      wifiIP = "192.168.3.32";
+      wifiName = "reyes";
+    
 
     if (wifiIP != null &&
         wifiName != null &&
@@ -106,10 +110,7 @@ class Util {
       if (currentIp == "7" || currentIp == "75") ip = "192.168.100.245";
     }
 
-
     if (ip != "0.0.0.0") esAutorizado = true;
-
-
 
     if (ip == "192.168.9.245" || ip == "192.168.100.245")
       esSucursal = false;

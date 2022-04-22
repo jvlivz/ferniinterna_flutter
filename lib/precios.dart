@@ -56,7 +56,7 @@ class _PreciosState extends State<Precios> {
   }
 
   Future<String> leerImpresoras() async {
-    String urlBase = Util.urlBase();
+    String urlBase = Util.urlBase(esPrecios:true);
     var res = await http
         .get(Uri.parse(urlBase + "verificadores/consulta.aspx?cim=1"));
 
@@ -334,7 +334,8 @@ class _PreciosState extends State<Precios> {
                                                     titulo:
                                                         datos.nombre.toString(),
                                                     listOfUrls: datos.imagenes,
-                                                    idArtic: datos.idArtic.toString(),
+                                                    idArtic: datos.idArtic
+                                                        .toString(),
                                                   );
                                                 }));
                                               },
@@ -351,8 +352,7 @@ class _PreciosState extends State<Precios> {
                                     contentPadding:
                                         EdgeInsets.fromLTRB(15, 10, 25, 0),
                                     title: Text("Atención"),
-                                    subtitle:
-                                        Text("Artículo en Colas de Stock"),
+                                    subtitle: Text("Artículo en cola de stock"),
                                   ),
                                 ),
                               if (datos.idArtic != "")
@@ -425,7 +425,7 @@ class _PreciosState extends State<Precios> {
                                                                 50)),
                                                     icon: Icon(
                                                         Icons.crop_portrait),
-                                                    label: Text("Destacado"),
+                                                    label: Text("Puntera"),
                                                     onPressed: () =>
                                                         imprimir(1, datos),
                                                   ),
@@ -663,8 +663,7 @@ class _PreciosState extends State<Precios> {
                                                     children: [
                                                       TextSpan(
                                                           text: "Exhib.: "),
-                                                      if (datos.exhibicion !=
-                                                          0)
+                                                      if (datos.exhibicion != 0)
                                                         TextSpan(
                                                           text: datos.exhibicion
                                                               .toString(),
@@ -852,6 +851,9 @@ class _PreciosState extends State<Precios> {
   imprimir(int i, Consulta datos) async {
     String textoAlerta = "";
 
+    if (codigoUsuario == "" && txtUsuarioController.text != "")
+      buscaUsuario(txtUsuarioController.text, context);
+
     try {
       if (codigoUsuario != "") {
         String urlBase = Util.urlBase(esPrecios: true);
@@ -863,24 +865,28 @@ class _PreciosState extends State<Precios> {
           impresora = "&imp=" +
               _impresoraSeleccionada.replaceAll("Impresora Portatil #", "");
 
-        var res = await http.get(Uri.parse(urlBase +
+
+String url = urlBase +
             "verificadores/consulta.aspx?prec=1&sku=" +
             datos.idArtic.toString() +
             "&bar=" +
             datos.idArtic.toString() +
             "&usu=" +
             codigoUsuario +
-            "&tetq=3&ope=" +
+            "&tetq=" + i.toString() +
+            "&ope=" +
             codigoUsuario +
             "&UO=" +
             cantidadEspecial.toString() +
             "&PO=" +
             ((precioEspecial == 0) ? "0" : precioEspecial.toString()) +
-            impresora));
+            impresora;
+        var res = await http.get(Uri.parse(url));
 
-        var resBody = json.decode(res.body.replaceAll(":NULL", ":null"));
+        var resBody =
+            json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
 
-        if (resBody["CODIGO"] != "") {
+        if (resBody["preciosok"] == true) {
           listaUltimos.insert(0, datos.descripcion.toString() + "\n");
 
           if (listaUltimos.length > 10) listaUltimos.removeAt(10);
@@ -891,6 +897,8 @@ class _PreciosState extends State<Precios> {
             mostrarOfertaEspecial = false;
             ultimos = listaUltimos.join("\n");
           });
+        } else {
+          textoAlerta = "⊙﹏⊙... error:" + resBody["mensaje"];
         }
       } else {
         SnackBar snackBar = SnackBar(
@@ -980,7 +988,7 @@ class _PreciosState extends State<Precios> {
 
       SnackBar snackBar = SnackBar(
         content: Text(
-            "Ahora por favor seleccione el tamaño de etiqueta a imprimir:\n\nDestacado, normal o perfu..."),
+            "Ahora por favor seleccione el tamaño de etiqueta a imprimir:\n\Puntera, normal o perfu..."),
         duration: Duration(seconds: 5),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);

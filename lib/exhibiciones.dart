@@ -686,8 +686,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
                                     contentPadding:
                                         EdgeInsets.fromLTRB(15, 10, 25, 0),
                                     title: Text("Atención"),
-                                    subtitle:
-                                        Text("Artículo en Colas de Stock"),
+                                    subtitle: Text("Artículo en cola de stock"),
                                   ),
                                 ),
                               if (datos.idArtic != "")
@@ -1291,11 +1290,11 @@ class _ExhibicionesState extends State<Exhibiciones> {
           "&bar=" +
           datos.idArtic.toString() +
           "&usu=" +
-          usuario.nombre.toString() +
+          usuario.usuario.toString() +
           "&qty=" +
           cantidad.toString() +
           "&ope=" +
-          usuario.usuario.toString() +
+          usuario.nombre.toString() +
           "&tex=" +
           tipo +
           "&fie=" +
@@ -1308,7 +1307,7 @@ class _ExhibicionesState extends State<Exhibiciones> {
       var resBody =
           json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
 
-      if (resBody["exhibicionesok"] == "true") {
+      if (resBody["exhibicionesok"] == true) {
         listaUltimos.insert(
             0,
             cantidad.toString() +

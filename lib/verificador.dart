@@ -539,7 +539,7 @@ class _VerificadorState extends State<Verificador> {
                                         EdgeInsets.fromLTRB(15, 10, 25, 0),
                                     title: Text("Atención"),
                                     subtitle:
-                                        Text("Artículo en Colas de Stock"),
+                                        Text("Artículo en cola de stock"),
                                   ),
                                 ),
                               if (datos.descripcionCorta != "" ||
@@ -552,7 +552,7 @@ class _VerificadorState extends State<Verificador> {
                                       title: Text("Descripciones"),
                                       subtitle: Column(
                                         children: [
-                                          Text(datos.descripcionCorta
+                                          Html(data: datos.descripcionCorta
                                               .toString()),
                                           Html(
                                               data: datos.descripcionLarga

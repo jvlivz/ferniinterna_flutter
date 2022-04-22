@@ -54,14 +54,14 @@ class _FullScreenImageState extends State<FullScreenImage> {
     );
   }
 
-  String dropdownvalue = 'Está pixelada o es de mala calidad.';
+  String dropdownvalue = 'No corresponde a la presentación.';
 
   // List of items in our dropdown menu
   var items = [
+    'No corresponde a la presentación.',
     'Está pixelada o es de mala calidad.',
     'Está mal cortada.',
     'No corresponde al producto.',
-    'No corresponde a la presentación.',
     'Tiene otro problema.',
   ];
 
@@ -85,14 +85,6 @@ class _FullScreenImageState extends State<FullScreenImage> {
           child: GestureDetector(
             child: Center(
               child: ListView(children: [
-                Hero(
-                  tag: widget.tag,
-                  child: CachedNetworkImage(
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.contain,
-                    imageUrl: widget.imageUrl,
-                  ),
-                ),
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: Row(children: [
@@ -159,9 +151,18 @@ class _FullScreenImageState extends State<FullScreenImage> {
                     child: ElevatedButton(
                       child: const Text('Reportar a Marketing'),
                       onPressed: () {
-                        enviarReporte(dropdownvalue.toLowerCase(), widget.idArtic);
+                        enviarReporte(
+                            dropdownvalue.toLowerCase(), widget.idArtic);
                       },
                     )),
+                Hero(
+                  tag: widget.tag,
+                  child: CachedNetworkImage(
+                    width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.contain,
+                    imageUrl: widget.imageUrl,
+                  ),
+                ),
               ]),
             ),
             onTap: () {

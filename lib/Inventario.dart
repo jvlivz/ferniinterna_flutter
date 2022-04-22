@@ -376,7 +376,7 @@ class _InventarioState extends State<Inventario> {
                                         EdgeInsets.fromLTRB(15, 10, 25, 0),
                                     title: Text("Atención"),
                                     subtitle:
-                                        Text("Artículo en Colas de Stock"),
+                                        Text("Artículo en cola de stock"),
                                   ),
                                 ),
                               if (datos.idArtic != "")
