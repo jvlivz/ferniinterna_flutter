@@ -61,8 +61,8 @@ class Util {
     //    wifiName.toString() == "AndroidWifi") ip = "192.168.3.253";
 
     
-      wifiIP = "192.168.3.32";
-      wifiName = "reyes";
+    //  wifiIP = "192.168.3.32";
+    //  wifiName = "reyes";
     
 
     if (wifiIP != null &&
