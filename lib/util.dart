@@ -14,6 +14,12 @@ class Util {
   static Future<bool> verificarRed() async {
     wifiName = "N/A";
     wifiIP = "0.0.0.0";
+
+    /*wifiIP = "192.168.3.32";
+      wifiName = "reyes";
+      esAutorizado = false;
+      return true;
+    */
     try {
       var connectivityResult = await Connectivity().checkConnectivity();
 
@@ -59,11 +65,6 @@ class Util {
 
     //if (wifiIP.toString() == "192.168.232.2" &&
     //    wifiName.toString() == "AndroidWifi") ip = "192.168.3.253";
-
-    
-    //  wifiIP = "192.168.3.32";
-    //  wifiName = "reyes";
-    
 
     if (wifiIP != null &&
         wifiName != null &&

@@ -47,9 +47,9 @@ class _FullScreenImageState extends State<FullScreenImage> {
         nombreUsuario = prefs.getString('login_name').toString();
       });
     txtUsuarioController.value = TextEditingValue(
-      text: codigoUsuario,
+      text: nombreUsuario,
       selection: TextSelection.fromPosition(
-        TextPosition(offset: codigoUsuario.length),
+        TextPosition(offset: nombreUsuario.length),
       ),
     );
   }
@@ -87,39 +87,26 @@ class _FullScreenImageState extends State<FullScreenImage> {
               child: ListView(children: [
                 Container(
                   padding: const EdgeInsets.all(10),
-                  child: Row(children: [
-                    Expanded(
-                      flex: 1,
-                      child: TextField(
-                        controller: txtUsuarioController,
-                        autocorrect: false,
-                        autofocus: false,
-                        enableSuggestions: false,
-                        maxLength: 4,
-                        onChanged: (String str) {
-                          setState(() {
-                            codigoUsuario = "";
-                            nombreUsuario = "";
-                          });
-                        },
-                        onSubmitted: (String str) {
-                          setState(() {
-                            buscaUsuario(str, context);
-                          });
-                        },
-                        decoration: InputDecoration(
-                            hintText: 'Usuario',
-                            counterStyle: TextStyle(
-                              height: double.minPositive,
-                            ),
-                            counterText: ""),
-                      ),
+                  child: Expanded(
+                    child: TextField(
+                      controller: txtUsuarioController,
+                      autocorrect: false,
+                      autofocus: false,
+                      enableSuggestions: false,
+                      maxLength: 4,
+                      onChanged: (String str) {
+                        setState(() {
+                          nombreUsuario = str;
+                        });
+                      },
+                      decoration: InputDecoration(
+                          hintText: 'Tu nombre...',
+                          counterStyle: TextStyle(
+                            height: double.minPositive,
+                          ),
+                          counterText: ""),
                     ),
-                    Expanded(
-                      flex: 4,
-                      child: Text(nombreUsuario),
-                    ),
-                  ]),
+                  ),
                 ),
                 Center(
                   child: DropdownButton(
@@ -174,64 +161,12 @@ class _FullScreenImageState extends State<FullScreenImage> {
     );
   }
 
-  void buscaUsuario(String str, BuildContext contexto) async {
-    String textoAlerta = "";
-    String codigoUsuario = "";
-    String nombreUsuario = "";
-    String urlBase = Util.urlBase();
-    final prefs = await SharedPreferences.getInstance();
-    try {
-      var res = await http
-          .get(Uri.parse(urlBase + "verificadores/consulta.aspx?ope=" + str));
-
-      var resBody = json.decode(res.body.replaceAll(":NULL", ":null"));
-
-      if (resBody["CODIGO"] != "") {
-        // Obtain shared preferences.
-
-        await prefs.setString('login_name', resBody["NOMBRE"]);
-        await prefs.setString('login_user', resBody["CODIGO"]);
-        codigoUsuario = resBody["CODIGO"];
-        nombreUsuario = resBody["NOMBRE"];
-        textoAlerta = "♥‿♥ Bienvenid@ " + resBody["NOMBRE"];
-        txtUsuarioController.value =
-            TextEditingValue(text: resBody["CODIGO"].toString().trim());
-      } else {
-        await prefs.remove('login_name');
-        await prefs.remove('login_user');
-        codigoUsuario = "";
-        nombreUsuario = "";
-        textoAlerta = "◔_◔... No encuentro tu usuario en el sistema.";
-        txtUsuarioController.value = TextEditingValue(text: "");
-      }
-    } catch (error) {
-      await prefs.remove('login_name');
-      await prefs.remove('login_user');
-      codigoUsuario = "";
-      nombreUsuario = "";
-      textoAlerta =
-          "⊙﹏⊙... se produjo un error al obtener los datos de tu usuario.";
-      txtUsuarioController.value = TextEditingValue(text: "");
-    }
-// Find the ScaffoldMessenger in the widget tree
-// and use it to show a SnackBar.
-
-    setState(() {
-      this.codigoUsuario = codigoUsuario;
-      this.nombreUsuario = nombreUsuario;
-    });
-    SnackBar snackBar = SnackBar(
-      content: Text(textoAlerta),
-    );
-    ScaffoldMessenger.of(contexto).showSnackBar(snackBar);
-  }
+ 
 
   void enviarReporte(String dropdownvalue, String idArtic) async {
     try {
-      if (codigoUsuario != "") {
+      if (nombreUsuario != "") {
         String urlBase = Util.urlBase();
-
-        final prefs = await SharedPreferences.getInstance();
 
         //String nombre = prefs.getString('login_name') ?? "";
 
