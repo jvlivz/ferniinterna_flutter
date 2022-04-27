@@ -135,11 +135,11 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text("Hola Usuario, bienvenido!"),
+              accountName: Text("Hola!"),
               accountEmail: Text(""),
               currentAccountPicture: CircleAvatar(
                   radius: 50.0,
-                  backgroundColor: const Color(0xFF778899),
+                  backgroundColor: Color.fromARGB(255, 254, 0, 36),
                   backgroundImage: Image.asset("assets/images/fr.png").image
                   //NetworkImage("http://tineye.com/images/widgets/mona.jpg"),
                   ),
