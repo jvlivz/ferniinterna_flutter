@@ -35,7 +35,7 @@ class _DetailScreenState extends State<DetailScreen> {
       appBar: AppBar(
         title: Text(
           widget.titulo,
-          style: new TextStyle(fontFamily: "Gretoon", fontSize: 12),
+          style: new TextStyle( fontSize: 12),
         ),
         backgroundColor: Color.fromARGB(255, 254, 0, 36),
       ),

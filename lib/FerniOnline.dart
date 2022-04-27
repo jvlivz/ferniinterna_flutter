@@ -110,7 +110,7 @@ class _FerniOnlineState extends State<FerniOnline> {
           ],
           title: Text(
             "FerniOnline",
-            style: new TextStyle(fontFamily: "Gretoon"),
+            style: new TextStyle(),
           ),
           backgroundColor: rojoFerni),
       body: SafeArea(

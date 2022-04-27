@@ -148,7 +148,7 @@ class _PreciosState extends State<Precios> {
           ],
           title: Text(
             "Precios",
-            style: new TextStyle(fontFamily: "Gretoon"),
+            style: new TextStyle(),
           ),
           backgroundColor: rojoFerni),
       body: SafeArea(

@@ -96,7 +96,7 @@ class _VerificadorState extends State<Verificador> {
           ],
           title: Text(
             "Verificador",
-            style: new TextStyle(fontFamily: "Gretoon"),
+            style: new TextStyle(),
           ),
           backgroundColor: rojoFerni),
       body: SafeArea(

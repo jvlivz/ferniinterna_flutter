@@ -147,7 +147,7 @@ class _InventarioState extends State<Inventario> {
           ],
           title: Text(
             "Inventario",
-            style: new TextStyle(fontFamily: "Gretoon"),
+            style: new TextStyle(),
           ),
           backgroundColor: rojoFerni),
       body: SafeArea(

@@ -75,93 +75,75 @@ class _FullScreenImageState extends State<FullScreenImage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Scaffold(
-        appBar: AppBar(
-            title: Text(
-              widget.titulo,
-              style: new TextStyle(fontFamily: "Gretoon", fontSize: 12),
-            ),
-            backgroundColor: Color.fromARGB(255, 254, 0, 36)),
-        body: SafeArea(
-          child: GestureDetector(
-            child: Center(
-              child: ListView(children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Expanded(
-                    child: TextField(
-                      controller: txtUsuarioController,
-                      autocorrect: false,
-                      autofocus: false,
-                      enableSuggestions: false,
-                      maxLength: 4,
-                      onChanged: (String str) {
-                        setState(() {
-                          nombreUsuario = str;
-                        });
-                      },
-                      decoration: InputDecoration(
-                          hintText: 'Tu nombre...',
-                          counterStyle: TextStyle(
-                            height: double.minPositive,
-                          ),
-                          counterText: ""),
+          appBar: AppBar(
+              title: Text(
+                widget.titulo,
+                style: new TextStyle(fontSize: 12),
+              ),
+              backgroundColor: Color.fromARGB(255, 254, 0, 36)),
+          body: SafeArea(
+              child: Padding(
+            padding: EdgeInsets.all(10),
+            child: SingleChildScrollView(
+                child: Column(children: [
+              TextField(
+                controller: txtUsuarioController,
+                autocorrect: false,
+                autofocus: false,
+                enableSuggestions: false,
+                maxLength: 25,
+                onChanged: (String str) {
+                  setState(() {
+                    nombreUsuario = str;
+                  });
+                },
+                decoration: InputDecoration(
+                    hintText: 'Tu nombre...',
+                    counterStyle: TextStyle(
+                      height: double.minPositive,
                     ),
-                  ),
-                ),
-                Center(
-                  child: DropdownButton(
-                    // Initial Value
-                    value: dropdownvalue,
-                    style: TextStyle(fontSize: 14, color: Colors.black87),
-                    // Down Arrow Icon
-                    icon: const Icon(Icons.keyboard_arrow_down),
+                    counterText: ""),
+              ),
+              DropdownButton(
+                // Initial Value
+                value: dropdownvalue,
+                style: TextStyle(fontSize: 14, color: Colors.black87),
+                // Down Arrow Icon
+                icon: const Icon(Icons.keyboard_arrow_down),
 
-                    // Array list of items
-                    items: items.map((String items) {
-                      return DropdownMenuItem(
-                        value: items,
-                        child: Text(items),
-                      );
-                    }).toList(),
-                    // After selecting the desired option,it will
-                    // change button value to selected value
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        dropdownvalue = newValue!;
-                      });
-                    },
-                  ),
+                // Array list of items
+                items: items.map((String items) {
+                  return DropdownMenuItem(
+                    value: items,
+                    child: Text(items),
+                  );
+                }).toList(),
+                // After selecting the desired option,it will
+                // change button value to selected value
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownvalue = newValue!;
+                  });
+                },
+              ),
+              ElevatedButton(
+                child: const Text('Reportar a Marketing'),
+                onPressed: () {
+                  enviarReporte(dropdownvalue.toLowerCase(), widget.idArtic);
+                },
+              ),
+              Hero(
+                tag: widget.tag,
+                child: CachedNetworkImage(
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.contain,
+                  imageUrl: widget.imageUrl,
                 ),
-                Container(
-                    height: 30,
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: ElevatedButton(
-                      child: const Text('Reportar a Marketing'),
-                      onPressed: () {
-                        enviarReporte(
-                            dropdownvalue.toLowerCase(), widget.idArtic);
-                      },
-                    )),
-                Hero(
-                  tag: widget.tag,
-                  child: CachedNetworkImage(
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.contain,
-                    imageUrl: widget.imageUrl,
-                  ),
-                ),
-              ]),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
-      ),
+              ),
+            ])),
+          ))),
     );
   }
-
- 
 
   void enviarReporte(String dropdownvalue, String idArtic) async {
     try {

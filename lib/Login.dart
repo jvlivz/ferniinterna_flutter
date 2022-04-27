@@ -27,7 +27,7 @@ class _LoginState extends State<Login> {
         appBar: AppBar(
             title: Text(
               "Exhibiciones",
-              style: new TextStyle(fontFamily: "Gretoon"),
+              style: new TextStyle(),
             ),
             backgroundColor: rojoFerni),
         body: Padding(

@@ -34,7 +34,7 @@ class _ConvenioEmpleadosState extends State<ConvenioEmpleados> {
         appBar: AppBar(
             title: Text(
               "Descuento Empleados",
-              style: new TextStyle(fontFamily: "Gretoon"),
+              style: new TextStyle(),
             ),
             backgroundColor: rojoFerni),
         body: SafeArea(
