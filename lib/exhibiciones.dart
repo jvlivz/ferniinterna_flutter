@@ -206,6 +206,20 @@ class _ExhibicionesState extends State<Exhibiciones> {
                                 size: MediaQuery.of(context).size.width * .1),
                           ),
                         ),
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                txtCodigoController.text = "";
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                codigoFocus.requestFocus();
+                              });
+                            },
+                            icon: Icon(LineIcons.times,
+                                size: MediaQuery.of(context).size.width * .1),
+                          ),
+                        )
                       ],
                     ),
                     Padding(

@@ -205,7 +205,20 @@ class _FerniOnlineState extends State<FerniOnline> {
                           icon: Icon(LineIcons.search,
                               size: MediaQuery.of(context).size.width * .1),
                         ),
-                      ),
+                      ),Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                txtOrdenController.text="";
+                                txtPackingListController.text="";
+                                packingFocus.requestFocus();
+                              });
+                            },
+                            icon: Icon(LineIcons.times,
+                                size: MediaQuery.of(context).size.width * .1),
+                          ),
+                        )
                     ]),
                     Padding(
                         padding: EdgeInsets.only(bottom: 5),

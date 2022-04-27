@@ -23,6 +23,7 @@ class _VerificadorState extends State<Verificador> {
   final txtCodigoController = TextEditingController();
 
   Consulta datos = new Consulta();
+  late FocusNode codigoFocus;
 
   void leerBarra() async {
     String barcodeScanRes = "";
@@ -68,8 +69,17 @@ class _VerificadorState extends State<Verificador> {
 
   void initState() {
     super.initState();
+    codigoFocus = FocusNode();
 
 //    WidgetsBinding.instance.addPostFrameCallback((_) => leerDatos());
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    codigoFocus.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -118,6 +128,7 @@ class _VerificadorState extends State<Verificador> {
                             autofocus: true,
                             enableSuggestions: false,
                             maxLength: 13,
+                            focusNode: codigoFocus,
                             onSubmitted: (String str) {
                               setState(() {
                                 leerDatos(str);
@@ -143,6 +154,20 @@ class _VerificadorState extends State<Verificador> {
                               });
                             },
                             icon: Icon(LineIcons.search,
+                                size: MediaQuery.of(context).size.width * .1),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                txtCodigoController.text = "";
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                codigoFocus.requestFocus();
+                              });
+                            },
+                            icon: Icon(LineIcons.times,
                                 size: MediaQuery.of(context).size.width * .1),
                           ),
                         ),
@@ -241,7 +266,8 @@ class _VerificadorState extends State<Verificador> {
                                                     titulo:
                                                         datos.nombre.toString(),
                                                     listOfUrls: datos.imagenes,
-                                                    idArtic: datos.idArtic.toString(),
+                                                    idArtic: datos.idArtic
+                                                        .toString(),
                                                   );
                                                 }));
                                               },
@@ -538,8 +564,7 @@ class _VerificadorState extends State<Verificador> {
                                     contentPadding:
                                         EdgeInsets.fromLTRB(15, 10, 25, 0),
                                     title: Text("Atención"),
-                                    subtitle:
-                                        Text("Artículo en cola de stock"),
+                                    subtitle: Text("Artículo en cola de stock"),
                                   ),
                                 ),
                               if (datos.descripcionCorta != "" ||
@@ -552,8 +577,9 @@ class _VerificadorState extends State<Verificador> {
                                       title: Text("Descripciones"),
                                       subtitle: Column(
                                         children: [
-                                          Html(data: datos.descripcionCorta
-                                              .toString()),
+                                          Html(
+                                              data: datos.descripcionCorta
+                                                  .toString()),
                                           Html(
                                               data: datos.descripcionLarga
                                                   .toString())

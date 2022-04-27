@@ -263,6 +263,20 @@ class _InventarioState extends State<Inventario> {
                                 size: MediaQuery.of(context).size.width * .1),
                           ),
                         ),
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                txtCodigoController.text = "";
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                codigoFocus.requestFocus();
+                              });
+                            },
+                            icon: Icon(LineIcons.times,
+                                size: MediaQuery.of(context).size.width * .1),
+                          ),
+                        )
                       ],
                     ),
                     Padding(
@@ -375,8 +389,7 @@ class _InventarioState extends State<Inventario> {
                                     contentPadding:
                                         EdgeInsets.fromLTRB(15, 10, 25, 0),
                                     title: Text("Atención"),
-                                    subtitle:
-                                        Text("Artículo en cola de stock"),
+                                    subtitle: Text("Artículo en cola de stock"),
                                   ),
                                 ),
                               if (datos.idArtic != "")
@@ -563,8 +576,7 @@ class _InventarioState extends State<Inventario> {
                                                     children: [
                                                       TextSpan(
                                                           text: "Exhib.: "),
-                                                      if (datos.exhibicion !=
-                                                          0)
+                                                      if (datos.exhibicion != 0)
                                                         TextSpan(
                                                           text: datos.exhibicion
                                                               .toString(),

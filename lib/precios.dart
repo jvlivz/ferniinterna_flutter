@@ -28,7 +28,7 @@ class _PreciosState extends State<Precios> {
   final txtPrecioController = TextEditingController();
 
   Consulta datos = new Consulta();
-
+  late FocusNode codigoFocus;
   List<String> listaUltimos = [];
   String ultimos = "";
   List data = [];
@@ -56,7 +56,7 @@ class _PreciosState extends State<Precios> {
   }
 
   Future<String> leerImpresoras() async {
-    String urlBase = Util.urlBase(esPrecios:true);
+    String urlBase = Util.urlBase(esPrecios: true);
     var res = await http
         .get(Uri.parse(urlBase + "verificadores/consulta.aspx?cim=1"));
 
@@ -122,6 +122,15 @@ class _PreciosState extends State<Precios> {
     cargaUsuario();
     leerImpresoras();
 //    WidgetsBinding.instance.addPostFrameCallback((_) => leerDatos());
+    codigoFocus = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    codigoFocus.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -208,6 +217,7 @@ class _PreciosState extends State<Precios> {
                           child: TextField(
                             controller: txtCodigoController,
                             autocorrect: false,
+                            focusNode: codigoFocus,
                             autofocus: true,
                             enableSuggestions: false,
                             maxLength: 13,
@@ -239,6 +249,20 @@ class _PreciosState extends State<Precios> {
                                 size: MediaQuery.of(context).size.width * .1),
                           ),
                         ),
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                txtCodigoController.text = "";
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                codigoFocus.requestFocus();
+                              });
+                            },
+                            icon: Icon(LineIcons.times,
+                                size: MediaQuery.of(context).size.width * .1),
+                          ),
+                        )
                       ],
                     ),
                     Padding(
@@ -865,15 +889,15 @@ class _PreciosState extends State<Precios> {
           impresora = "&imp=" +
               _impresoraSeleccionada.replaceAll("Impresora Portatil #", "");
 
-
-String url = urlBase +
+        String url = urlBase +
             "verificadores/consulta.aspx?prec=1&sku=" +
             datos.idArtic.toString() +
             "&bar=" +
             datos.idArtic.toString() +
             "&usu=" +
             codigoUsuario +
-            "&tetq=" + i.toString() +
+            "&tetq=" +
+            i.toString() +
             "&ope=" +
             codigoUsuario +
             "&UO=" +
