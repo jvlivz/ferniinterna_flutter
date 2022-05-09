@@ -391,46 +391,54 @@ class _PreciosState extends State<Precios> {
                                         Expanded(
                                             flex: 2,
                                             child: Column(children: [
-                                              Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 8, 4, 8),
-                                                child: TextButton.icon(
-                                                  style: TextButton.styleFrom(
-                                                      primary: Colors.red,
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      minimumSize:
-                                                          Size.fromHeight(50)),
-                                                  icon: Icon(Icons.money),
-                                                  label: Text("Oferta"),
-                                                  onPressed: () => setState(() {
-                                                    mostrarOfertaEspecial =
-                                                        true;
-                                                    txtPrecioController.value =
-                                                        TextEditingValue(
-                                                            text: "");
-                                                    txtCantController.value =
-                                                        TextEditingValue(
-                                                            text: "");
-                                                  }),
+                                              if (!txtCodigoController.text
+                                                  .startsWith("."))
+                                                Padding(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      0, 8, 4, 8),
+                                                  child: TextButton.icon(
+                                                    style: TextButton.styleFrom(
+                                                        primary: Colors.red,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        minimumSize:
+                                                            Size.fromHeight(
+                                                                50)),
+                                                    icon: Icon(Icons.money),
+                                                    label: Text("Oferta"),
+                                                    onPressed: () =>
+                                                        setState(() {
+                                                      mostrarOfertaEspecial =
+                                                          true;
+                                                      txtPrecioController
+                                                              .value =
+                                                          TextEditingValue(
+                                                              text: "");
+                                                      txtCantController.value =
+                                                          TextEditingValue(
+                                                              text: "");
+                                                    }),
+                                                  ),
                                                 ),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 0, 4, 0),
-                                                child: TextButton.icon(
-                                                  style: TextButton.styleFrom(
-                                                      primary: Colors.blue,
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      minimumSize:
-                                                          Size.fromHeight(50)),
-                                                  icon: Icon(Icons.crop_5_4),
-                                                  label: Text("Normal"),
-                                                  onPressed: () =>
-                                                      imprimir(2, datos),
+                                              if (!txtCodigoController.text
+                                                  .startsWith("."))
+                                                Padding(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      0, 0, 4, 0),
+                                                  child: TextButton.icon(
+                                                    style: TextButton.styleFrom(
+                                                        primary: Colors.blue,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        minimumSize:
+                                                            Size.fromHeight(
+                                                                50)),
+                                                    icon: Icon(Icons.crop_5_4),
+                                                    label: Text("Normal"),
+                                                    onPressed: () =>
+                                                        imprimir(2, datos),
+                                                  ),
                                                 ),
-                                              ),
                                             ])),
                                         Expanded(
                                             flex: 2,
@@ -454,30 +462,37 @@ class _PreciosState extends State<Precios> {
                                                         imprimir(1, datos),
                                                   ),
                                                 ),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      4, 0, 0, 0),
-                                                  child: TextButton.icon(
-                                                    style: TextButton.styleFrom(
-                                                        primary: Colors.black,
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        minimumSize:
-                                                            Size.fromHeight(
-                                                                50)),
-                                                    icon: Icon(Icons.crop_7_5),
-                                                    label: Text("Perfu"),
-                                                    onPressed: () =>
-                                                        imprimir(3, datos),
-                                                  ),
-                                                )
+                                                if (!txtCodigoController.text
+                                                    .startsWith("."))
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            4, 0, 0, 0),
+                                                    child: TextButton.icon(
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                              primary:
+                                                                  Colors.black,
+                                                              backgroundColor:
+                                                                  Colors.white,
+                                                              minimumSize: Size
+                                                                  .fromHeight(
+                                                                      50)),
+                                                      icon:
+                                                          Icon(Icons.crop_7_5),
+                                                      label: Text("Perfu"),
+                                                      onPressed: () =>
+                                                          imprimir(3, datos),
+                                                    ),
+                                                  )
                                               ],
                                             ))
                                       ],
                                     ),
                                   ),
                                 ),
-                              if (mostrarOfertaEspecial)
+                              if (mostrarOfertaEspecial &&
+                                  !txtCodigoController.text.startsWith("."))
                                 Card(
                                     color: Colors.white70,
                                     child: ListTile(
