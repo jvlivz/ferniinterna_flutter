@@ -213,6 +213,7 @@ class _VerificadorState extends State<Verificador> {
                                                   datos.precio.toString() +
                                                   "\n",
                                               style: TextStyle(
+                                                fontSize: 25,
                                                   fontWeight: FontWeight.bold,
                                                   color: (datos.oferta != "")
                                                       ? Colors.red

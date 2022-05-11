@@ -47,12 +47,16 @@ class _PreciosState extends State<Precios> {
       setState(() {
         codigoUsuario = prefs.getString('login_user').toString();
       });
+
     txtUsuarioController.value = TextEditingValue(
       text: codigoUsuario,
       selection: TextSelection.fromPosition(
         TextPosition(offset: codigoUsuario.length),
       ),
     );
+
+    if (codigoUsuario == "" && txtUsuarioController.text != "")
+      buscaUsuario(txtUsuarioController.text, context);
   }
 
   Future<String> leerImpresoras() async {
@@ -305,6 +309,7 @@ class _PreciosState extends State<Precios> {
                                                   datos.precio.toString() +
                                                   "\n",
                                               style: TextStyle(
+                                                  fontSize: 25,
                                                   fontWeight: FontWeight.bold,
                                                   color: (datos.oferta != "")
                                                       ? Colors.red
@@ -892,7 +897,7 @@ class _PreciosState extends State<Precios> {
 
     if (codigoUsuario == "" && txtUsuarioController.text != "")
       buscaUsuario(txtUsuarioController.text, context);
-
+    String url = "";
     try {
       if (codigoUsuario != "") {
         String urlBase = Util.urlBase(esPrecios: true);
@@ -904,7 +909,7 @@ class _PreciosState extends State<Precios> {
           impresora = "&imp=" +
               _impresoraSeleccionada.replaceAll("Impresora Portatil #", "");
 
-        String url = urlBase +
+        url = urlBase +
             "verificadores/consulta.aspx?prec=1&sku=" +
             datos.idArtic.toString() +
             "&bar=" +
@@ -935,9 +940,13 @@ class _PreciosState extends State<Precios> {
             precioEspecial = 0;
             mostrarOfertaEspecial = false;
             ultimos = listaUltimos.join("\n");
+            txtCodigoController.text = "";
+            datos.limpiar();
+            codigoFocus.requestFocus();
           });
+          textoAlerta = "Enviado correctamente...";
         } else {
-          textoAlerta = "⊙﹏⊙... error:" + resBody["mensaje"];
+          textoAlerta = "⊙﹏⊙... error:" + resBody["mensaje"] + " " + url;
         }
       } else {
         SnackBar snackBar = SnackBar(
@@ -948,13 +957,17 @@ class _PreciosState extends State<Precios> {
       }
     } catch (error) {
       textoAlerta =
-          "⊙﹏⊙... se produjo un error al enviar los datos de etiquetas.";
+          "⊙﹏⊙... se produjo un error al enviar los datos de etiquetas. " +
+              error.toString() +
+              " " +
+              url;
       txtUsuarioController.value = TextEditingValue(text: "");
     }
 // Find the ScaffoldMessenger in the widget tree
 // and use it to show a SnackBar.
 
     SnackBar snackBar = SnackBar(
+      duration: Duration(seconds: 10),
       content: Text(textoAlerta),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
