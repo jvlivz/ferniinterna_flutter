@@ -68,9 +68,11 @@ class Util {
 
     if (wifiIP != null &&
         wifiName != null &&
-        (wifiName!.toLowerCase() == "reyes" ||
+        (wifiName!.toLowerCase() == "androidwifi" ||
+            wifiName!.toLowerCase() == "reyes" ||
             (wifiName!.toLowerCase().startsWith('frni_') &&
                 wifiName!.toLowerCase().endsWith('_wf')))) {
+      if (wifiName!.toLowerCase() == "androidwifi") wifiIP = "192.168.3.1";
       String currentIp = wifiIP.toString().split('.')[2];
       print(currentIp);
 

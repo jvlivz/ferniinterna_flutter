@@ -703,6 +703,17 @@ class _ExhibicionesState extends State<Exhibiciones> {
                                     subtitle: Text("Artículo en cola de stock"),
                                   ),
                                 ),
+                              if (datos.condVta != "" &&
+                                  datos.condVta.toString().toLowerCase() == "n")
+                                Card(
+                                  color: Colors.yellow,
+                                  child: ListTile(
+                                    contentPadding:
+                                        EdgeInsets.fromLTRB(15, 10, 25, 0),
+                                    title: Text("Atención"),
+                                    subtitle: Text("Artículo en cola de stock"),
+                                  ),
+                                ),
                               if (datos.idArtic != "")
                                 Card(
                                   color: Colors.white70,
