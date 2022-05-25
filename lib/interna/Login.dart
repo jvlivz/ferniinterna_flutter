@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:crypto/crypto.dart';
-import 'package:ferniinterna/Usuario.dart';
-import 'package:ferniinterna/exhibiciones.dart';
-import 'package:ferniinterna/util.dart';
+import 'package:ferniinterna/interna/Usuario.dart';
+import 'package:ferniinterna/interna/exhibiciones.dart';
+import 'package:ferniinterna/interna/util.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;

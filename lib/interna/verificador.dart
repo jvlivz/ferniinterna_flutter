@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:ferniinterna/Consulta.dart';
-import 'package:ferniinterna/util.dart';
+import 'package:ferniinterna/interna/Consulta.dart';
+import 'package:ferniinterna/interna/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;

@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
 //import 'dart:developer';
-import 'package:ferniinterna/SeguimientoFO.dart';
+import 'package:ferniinterna/interna/SeguimientoFO.dart';
 //import 'package:ferniinterna/Usuario.dart';
-import 'package:ferniinterna/util.dart';
+import 'package:ferniinterna/interna/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;

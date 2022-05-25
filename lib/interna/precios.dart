@@ -1,8 +1,8 @@
 import 'dart:convert';
 //import 'dart:developer';
 //import 'dart:html';
-import 'package:ferniinterna/Consulta.dart';
-import 'package:ferniinterna/util.dart';
+import 'package:ferniinterna/interna/Consulta.dart';
+import 'package:ferniinterna/interna/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
@@ -99,6 +99,7 @@ class _PreciosState extends State<Precios> {
     );
 
     //todo:sacar
+    
     txtCodigoController.text = barcodeScanRes;
     leerDatos(barcodeScanRes);
   }
@@ -913,7 +914,7 @@ class _PreciosState extends State<Precios> {
             "verificadores/consulta.aspx?prec=1&sku=" +
             datos.idArtic.toString() +
             "&bar=" +
-            datos.idArtic.toString() +
+            txtCodigoController.text +
             "&usu=" +
             codigoUsuario +
             "&tetq=" +
