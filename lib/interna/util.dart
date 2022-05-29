@@ -68,12 +68,12 @@ class Util {
 
     if (wifiIP != null &&
         wifiName != null &&
-        (wifiName!.toLowerCase() == "androidwifi----test" ||
+        (wifiName!.toLowerCase() == "androidwifi-------------------e" ||
             wifiName!.toLowerCase() == "reyes" ||
             (wifiName!.toLowerCase().startsWith('frni_') &&
                 wifiName!.toLowerCase().endsWith('_wf')))) {
-
-      if (wifiName!.toLowerCase() == "androidwifi----test") wifiIP = "192.168.3.1";
+     
+      //if (wifiName!.toLowerCase() == "androidwifi") wifiIP = "192.168.7.1";
 
       String currentIp = wifiIP.toString().split('.')[2];
       print(currentIp);
@@ -143,11 +143,14 @@ class Util {
     if (ip.startsWith("192.168.6.")) return "F6";
     if (ip.startsWith("192.168.107.")) return "F7";
     if (ip.startsWith("192.168.80.")) return "F8";
+    if (wifiIP != null &&
+        (wifiIP!.startsWith("192.168.7.") ||
+            wifiIP!.startsWith("192.168.75.")) &&
+        ip.startsWith("192.168.100.")) return "CD";
     if (ip.startsWith("192.168.9.") ||
         ip.startsWith("192.168.100.") ||
         ip.startsWith("192.168.14.")) return "MY";
-    if (ip.startsWith("192.168.7.") || ip.startsWith("192.168.75."))
-      return "CD";
+
     if (ip.startsWith("192.168.90.")) return "F9";
 
     return "";

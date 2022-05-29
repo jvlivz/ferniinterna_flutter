@@ -1,4 +1,3 @@
-
 class SeguimientoFO {
   bool consultaok = false;
   String? mensaje = "";
@@ -27,6 +26,11 @@ class SeguimientoFO {
   String? notificasms = "";
   String? renotificasms = "";
 
+  String? salidaCD = "";
+  String? notificaSalidaCD = "";
+    String? salidaCDUsuario = "";
+
+
   SeguimientoFO(
       {this.consultaok = false,
       this.mensaje = "",
@@ -53,7 +57,10 @@ class SeguimientoFO {
       this.recibidocd = "",
       this.entregadook = false,
       this.notificasms = "",
-      this.renotificasms = ""});
+      this.renotificasms = "",
+      this.salidaCD="",
+      this.notificaSalidaCD="",
+      this.salidaCDUsuario=""});
 
   SeguimientoFO.fromJson(Map<String, dynamic> json) {
     consultaok = json['consultaok'];
@@ -82,6 +89,9 @@ class SeguimientoFO {
     entregadook = json['entregadook'];
     notificasms = json['notificasms'];
     renotificasms = json['renotificasms'];
+    notificaSalidaCD = json['notificasalidacd'];
+    salidaCD = json['salidacd'];
+    salidaCDUsuario= json['salidacdusuario'];
   }
 
   Map<String, dynamic> toJson() {

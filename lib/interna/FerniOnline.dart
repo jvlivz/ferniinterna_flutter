@@ -205,20 +205,21 @@ class _FerniOnlineState extends State<FerniOnline> {
                           icon: Icon(LineIcons.search,
                               size: MediaQuery.of(context).size.width * .1),
                         ),
-                      ),Expanded(
-                          flex: 1,
-                          child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                txtOrdenController.text="";
-                                txtPackingListController.text="";
-                                packingFocus.requestFocus();
-                              });
-                            },
-                            icon: Icon(LineIcons.times,
-                                size: MediaQuery.of(context).size.width * .1),
-                          ),
-                        )
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              txtOrdenController.text = "";
+                              txtPackingListController.text = "";
+                              packingFocus.requestFocus();
+                            });
+                          },
+                          icon: Icon(LineIcons.times,
+                              size: MediaQuery.of(context).size.width * .1),
+                        ),
+                      )
                     ]),
                     Padding(
                         padding: EdgeInsets.only(bottom: 5),
@@ -331,6 +332,16 @@ class _FerniOnlineState extends State<FerniOnline> {
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.black)),
+                                          if (datos.salidaCD != null &&
+                                              datos.salidaCD != "")
+                                            TextSpan(text: "Salió de CD : "),
+                                          if (datos.salidaCD != null &&
+                                              datos.salidaCD != "")
+                                            TextSpan(
+                                                text: (datos.salidaCD! + "\n"),
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black)),
                                           if (datos.leidosuc != null &&
                                               datos.leidosuc != "")
                                             TextSpan(
@@ -458,6 +469,27 @@ class _FerniOnlineState extends State<FerniOnline> {
                                                 }),
                                               ),
                                             ),
+                                          if (Util.obtenerIDSucursal() ==
+                                                  "CD" &&
+                                              (datos.salidaCD == null ||
+                                                  datos.salidaCD == ""))
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  0, 8, 4, 8),
+                                              child: TextButton.icon(
+                                                style: TextButton.styleFrom(
+                                                    primary: Color.fromARGB(255, 8, 57, 3),
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    minimumSize:
+                                                        Size.fromHeight(50)),
+                                                icon: Icon(LineIcons.truck),
+                                                label: Text("Dar salida de CD"),
+                                                onPressed: () => setState(() {
+                                                  salidaCD(datos);
+                                                }),
+                                              ),
+                                            ),
                                           if (Util.obtenerIDSucursal() == "CD")
                                             Padding(
                                               padding: EdgeInsets.fromLTRB(
@@ -521,6 +553,79 @@ class _FerniOnlineState extends State<FerniOnline> {
     setState(() {
       datos = SeguimientoFO.fromJson(parsedJson);
     });
+  }
+
+  salidaCD(SeguimientoFO datos) async {
+    String textoAlerta = "";
+
+    try {
+      if (codigoUsuario != "") {
+        final prefs = await SharedPreferences.getInstance();
+
+        FocusManager.instance.primaryFocus?.unfocus();
+        if (prefs.getString("login_user") != codigoUsuario) {
+          SnackBar snackBar = SnackBar(
+            content: Text("◔_◔...verificá tu usuario..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+
+        String url = "http://192.168.100.245/" +
+            "verificadores/consulta.aspx?scfv=1&usu=" +
+            codigoUsuario.trim() +
+            " " +
+            prefs.getString("login_name").toString() +
+            "&packing=" +
+            datos.nroPrecin.toString() +
+            "&nropedido=" +
+            datos.nroPedido.toString() +
+            "&ope=" +
+            codigoUsuario;
+
+        var res = await http.get(Uri.parse(url));
+
+        var resBody =
+            json.decode(res.body.replaceAll(":NULL", ":null").toLowerCase());
+
+        if (resBody["consultaok"] == true) {
+          setState(() {
+            txtPackingListController.text = "";
+            txtOrdenController.text = "";
+            datos.limpiar();
+            FocusManager.instance.primaryFocus?.unfocus();
+            packingFocus.requestFocus();
+          });
+          SnackBar snackBar = SnackBar(
+            content: Text("Registro existoso ..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else {
+          SnackBar snackBar = SnackBar(
+            content: Text("◔_◔...Hubo un problema: " +
+                resBody["mensaje"].toString() +
+                " ..."),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      } else {
+        SnackBar snackBar = SnackBar(
+          content: Text(
+              "◔_◔...No me dijiste quien sos, completá tu usuario por favor..."),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } catch (error) {
+      textoAlerta =
+          "⊙﹏⊙... se produjo un error al enviar los datos de FerniOnline.";
+      txtUsuarioController.value = TextEditingValue(text: "");
+    }
+// Find the ScaffoldMessenger in the widget tree
+// and use it to show a SnackBar.
+
+    SnackBar snackBar = SnackBar(
+      content: Text(textoAlerta),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   retornoCD(SeguimientoFO datos) async {
