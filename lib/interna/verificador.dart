@@ -213,7 +213,7 @@ class _VerificadorState extends State<Verificador> {
                                                   datos.precio.toString() +
                                                   "\n",
                                               style: TextStyle(
-                                                fontSize: 25,
+                                                  fontSize: 25,
                                                   fontWeight: FontWeight.bold,
                                                   color: (datos.oferta != "")
                                                       ? Colors.red
@@ -274,6 +274,61 @@ class _VerificadorState extends State<Verificador> {
                                               },
                                             )
                                           : Container(),
+                                    ),
+                                  ),
+                                ),
+                              if (datos.uni1 != "")
+                                Card(
+                                  color: Colors.white70,
+                                  child: ListTile(
+                                    title: Text("Descuentos por cantidad"),
+                                    contentPadding:
+                                        EdgeInsets.fromLTRB(15, 10, 25, 0),
+                                    subtitle: Text.rich(
+                                      TextSpan(
+                                        children: [
+                                          if (datos.pre1 != "")
+                                            TextSpan(
+                                              text: "\n" +
+                                                  datos.uni1! +
+                                                  "un " +
+                                                  datos.desc1! +
+                                                  "% ",
+                                              style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors.black),
+                                            ),
+                                          if (datos.pre1 != "")
+                                            TextSpan(
+                                              text: "\$ " + datos.pre1! + "\n",
+                                              style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.red),
+                                            ),
+                                          if (datos.pre2 != "")
+                                            TextSpan(
+                                              text: "\n" +
+                                                  datos.uni2! +
+                                                  "un " +
+                                                  datos.desc2! +
+                                                  "% ",
+                                              style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors.black),
+                                            ),
+                                          if (datos.pre1 != "")
+                                            TextSpan(
+                                              text: "\$ " + datos.pre2! + "\n",
+                                              style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.red),
+                                            ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
